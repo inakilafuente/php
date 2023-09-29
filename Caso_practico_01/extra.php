@@ -90,7 +90,6 @@ function pagos_equitativos(array $participantes,array $pagos ){
             }
         }
         asort($array_pagos);
-        #print_r($array_pagos);
         $saldar_deudas=array();
         $keys_pagos=array_keys(($array_pagos));
         $l=0;
@@ -110,58 +109,24 @@ function pagos_equitativos(array $participantes,array $pagos ){
                 $nombre_a_pagar=$clave_acreedor;
             }
             $cantidad_recibir=$array_pagos[$nombre_a_pagar];
-            /*
-            echo("Nombre a pagar: ".$nombre_a_pagar ."\n");
-            echo("Cantidad a recibir: ".$cantidad_recibir ."\n");
-            echo("Nombre deudor: ".$nombre_deudor ."\n");
-            echo("Cantidad pago: ".$cantidad_pago ."\n");
-            */
             if($cantidad_recibir>=$cantidad_pago){
                 array_push($saldar_deudas,array(
                     "acreedor" => $nombre_a_pagar,
                     "paga" => $nombre_deudor,
                     "importe" => $cantidad_pago,
                 ));
-                /*
-                echo("----SALDAR_DEUDAS----"."\n");
-                echo("---------------------"."\n");
-                print_r($saldar_deudas);
-                echo("---------------------"."\n");
-                echo("---------------------"."\n");
-                */
                 $array_pagos[$nombre_a_pagar]-=$cantidad_pago;
                 $array_pagos[$nombre_deudor]+=$cantidad_pago;
-                /*
-                echo("/////ARRAY_PAGOS////"."\n");
-                echo("////////////////////"."\n");
-                print_r($array_pagos);
-                echo("////////////////////"."\n");
-                echo("////////////////////"."\n");
-                */
             }else{
                 array_push($saldar_deudas,array(
                     "acreedor" => $nombre_a_pagar,
                     "paga" => $nombre_deudor,
                     "importe" => $cantidad_recibir,
                 ));
-                /*
-                echo("----SALDAR_DEUDAS----"."\n");
-                echo("---------------------"."\n");
-                print_r($saldar_deudas);
-                echo("---------------------"."\n");
-                echo("---------------------"."\n");
-                echo("cantidad_pago:" .$cantidad_pago . "\n");
-                echo("cantidad_recibir:" .$cantidad_recibir . "\n");
-                */
+
                 $array_pagos[$nombre_deudor]=$cantidad_recibir-$cantidad_pago;
                 $array_pagos[$nombre_a_pagar]=0;
-                /*
-                echo("/////ARRAY_PAGOS////"."\n");
-                echo("////////////////////"."\n");
-                print_r($array_pagos);
-                echo("////////////////////"."\n");
-                echo("////////////////////"."\n");
-                */
+
 
             }
             if($array_pagos[$nombre_deudor]==0){
@@ -170,12 +135,9 @@ function pagos_equitativos(array $participantes,array $pagos ){
                 }
                 unset($array_pagos[$nombre_deudor]);
 
-                #print_r($array_pagos);
-                #print_r($keys_pagos);
             }
 
         }
-        #print_r($saldar_deudas);
         for($q=0;$q<count($saldar_deudas);$q++){
             echo($saldar_deudas[$q]["paga"]." paga a " . $saldar_deudas[$q]["acreedor"] . " el importe de ". $saldar_deudas[$q]["importe"] . "€ \n");
         }
