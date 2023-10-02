@@ -38,7 +38,7 @@ if(gettype($opcion)=="integer"){
             $cadena = (string) readline("Escribe una cadena:");
             if(gettype(($cadena))=="string"){
                 echo("La cadena resultado es: ");
-                $array_result=str_split($cadena);
+                $array_result[]=$cadena;
                 print_r($array_result);
                 echo("\n");
             }else{

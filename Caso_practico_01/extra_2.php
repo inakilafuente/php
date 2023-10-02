@@ -68,23 +68,19 @@ function obtener_datos(string $url,$pagina=false,$limite=false,$busqueda=false){
     }
 }
 
-$pagina=0;
-$limite=0;
-$busqueda="";
-if(($argc)>1 && ($argc<4)){
-    echo("Parametros recibidos: \n");
-    for($i=0;$i<$argc;$i++){
-        if($i==0){
-            $pagina=(int) $argc[$i];
-        }
-        if($i==1){
-            $limite=(int) $argc[$i];
-        }
-        if($i==2){
-            $busqueda=(string) $argc[$i];
-        }
-    }
-}else{
-    echo("Ningun parametro introducido \n");
+
+if(count($argv)==4){
+    $pagina=(int) $argv[1];
+    $limite=(int) $argv[2];
+    $busqueda=(string) $argv[3];
+    obtener_datos($url,$pagina,$limite,$busqueda);
+}else if (count($argv)==3){
+    $pagina=(int) $argv[1];
+    $limite=(int) $argv[2];
+    obtener_datos($url,$pagina,$limite);
+}else if(count($argv)==2) {
+    $pagina = (int)$argv[1];
+    obtener_datos($url,$pagina);
 }
-obtener_datos($url,$pagina,$limite,$busqueda);
+
+
