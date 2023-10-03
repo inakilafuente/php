@@ -51,7 +51,6 @@ function obtener_datos(string $url,$pagina=false,$limite=false,$busqueda=false){
         echo("Error al conectarse a la API");
     }else{
         curl_close($ch);
-
         $data=json_decode($respuesta,true);
         foreach ($data as $empleado){
             echo("::::::::::::::::::::::::::::::::::::\n");
