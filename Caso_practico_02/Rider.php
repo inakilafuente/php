@@ -19,7 +19,19 @@ class Rider{
     public function get_nombre(){
         return $this->nombre;
     }
+    public function set_nombre($nombre){
+        $this->nombre=$nombre;
+    }
     public function get_apellidos(){
         return $this->apellidos;
+    }
+    public function set_apellidos($apellidos){
+        $this->apellidos=$apellidos;
+    }
+    public function to_string(){
+        echo("Rider: \n".
+            "\tID: ".$this->id."\n".
+            "\tNombre: ".$this->nombre."\n".
+            "\tApellidos: ".$this->apellidos ."\n");
     }
 }

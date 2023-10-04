@@ -1,5 +1,6 @@
 <?php
 require_once "Estado_pedido.php";
+require_once "Rider.php";
 class Pedido{
     private $id;
     private $estado_pedido;
@@ -9,8 +10,9 @@ class Pedido{
     private $Hora_entrega;
     private $Tiempo_entrega;
     private $dist;
+    private $rider;
 
-    public function __construct($id, $Direccion_recogida, $Hora_recogida,$Direccion_entrega,$Hora_entrega,$Tiempo_entrega,$estado_pedido,$dist)
+    public function __construct($id, $Direccion_recogida, $Hora_recogida,$Direccion_entrega,$Hora_entrega,$Tiempo_entrega,$estado_pedido,$dist,$rider)
     {
         $this->id = $id;
         $this->estado_pedido = $estado_pedido;
@@ -21,7 +23,7 @@ class Pedido{
         $this->Tiempo_entrega=$Tiempo_entrega;
     }
     public static function Pedido($id, $Direccion_recogida, $Direccion_entrega){
-        return new self($id, $Direccion_recogida, "-", $Direccion_entrega, "-","-",Estado_pedido::PENDIENTE,0);
+        return new self($id, $Direccion_recogida, "-", $Direccion_entrega, "-","-",Estado_pedido::PENDIENTE,0,null);
     }
     public function get_id(){
         return $this->id;
@@ -62,6 +64,12 @@ class Pedido{
     public function set_dist($dist){
         $this->dist=$dist;
     }
+    public function set_rider($rider){
+        $this->rider=$rider;
+    }
+    public function get_rider(){
+        return $this->rider;
+    }
     public function to_string(){
         echo("Pedido ". $this->id ."\n".
             "\t" ."Estado: ".$this->get_estado() ."\n".
@@ -83,7 +91,12 @@ class Pedido{
                 echo($this->Tiempo_entrega. "\n");
             }
             echo("\tDistancia: ".$this->dist." km\n");
-            echo("\tAsignado a: ".$this->rider." km\n");
+            if($this->rider==null){
+                echo("\tAsignado a: -\n");
+            }else{
+                echo("\tAsignado a: ".$this->rider->get_nombre()." ".$this->rider->get_apellidos()."\n");
+            }
+
 
     }
 

@@ -1,39 +1,19 @@
 <?php
 require_once "Pedido.php";
-/*
-    $url="http://api.positionstack.com/v1/forward?access_key=521c5d20deb4b33ed5b197c77b3d1ebe&query=";
 
-
-    //"1600%20Pennsylvania%20Ave%20NW,%20Washington%20DC"
-    $ch=curl_init();
-    curl_setopt($ch,CURLOPT_URL,$url);
-    curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-    $respuesta=curl_exec($ch);
-    if(curl_errno($ch)){
-        $error_msg=curl_errno(($ch));
-        echo("Error al conectarse a la API \n");
-    }else {
-        curl_close($ch);
-        $data = json_decode($respuesta, true);
-        foreach ($data as $dir=>$value) {
-           $latitud = $value['0']['latitude'];
-           $longitud = $value['0']['longitude'];
-
-           echo($latitud. "\n");
-           echo($longitud. "\n");
-        }
-    }
-*/
 $opcion=0;
 $array_pedidos=array();
-while($opcion!=7) {
+$array_riders=array();
+while($opcion!=9) {
     echo "1. Listar todos los pedidos \n
 2. Listar pedidos pendientes \n
 3. Registrar nuevo pedido \n
 4. Recoger pedido \n
 5. Entregar pedido \n
 6. Calcular distancia pedido \n
-7. Salir \n
+7. Dar alta rider \n
+8. Asignar rider a pedido \n
+9. Salir \n
 Escoja una opción: ";
     $opcion = (int)readline("Escoja una opción:");
     if (gettype($opcion) == "integer") {
@@ -179,7 +159,59 @@ Escoja una opción: ";
                     echo("Id no valido \n");
                     break;
                 }
-
+            case 7:
+                $existe=false;
+                echo("Escribe el nombre del rider:");
+                $nombre_rider = (string)readline("Escribe el nombre del rider:");
+                echo("Escribe los apellidos del rider:");
+                $apellidos_rider = (string)readline("Escribe los apellidos del rider:");
+                foreach ($array_riders as $rid){
+                    if ($rid->get_nombre() == $nombre_rider && $rid->get_apellidos() == $apellidos_rider){
+                        $existe=true;
+                    }
+                }
+                if($existe){
+                    echo("Estas intentando dar de alta un rider existente \n");
+                    break;
+                }else{
+                    $rider=Rider::Rider(count($array_riders),$nombre_rider,$apellidos_rider);
+                    $array_riders[]=$rider;
+                    echo("Rider dado de alta \n");
+                    break;
+                }
+            case 8:
+                $existe_pedido=false;
+                $existe_rider=false;
+                echo("-----------------------\n");
+                echo("Riders dados de alta \n");
+                echo("\n");
+                foreach ($array_riders as $rid){
+                    $rid->to_string();
+                }
+                echo("-----------------------\n");
+                echo("Escribe el id del rider:");
+                $id_rider = (int)readline("Escribe el id del rider:");
+                echo("Escribe el id del pedido a asignar:");
+                $id_pedido = (int)readline("Escribe el id del pedido a asignar:");
+                $rider=null;
+                foreach ($array_riders as $rid){
+                    if($rid->get_id()==$id_rider){
+                        $existe_rider=true;
+                        $rider=$rid;
+                    }
+                }
+                foreach ($array_pedidos as $pedi){
+                    if($pedi->get_id()==$id_pedido && ($pedi->get_rider()==null || $pedi->get_rider()->get_id()!=$rider->get_id())){
+                        $existe_pedido=true;
+                        $pedi->set_rider($rider);
+                    }
+                }
+                if(!$existe_rider){
+                    echo("El rider no existe, has de darle de alta primero \n");
+                }
+                if(!$existe_pedido){
+                    echo("El pedido no existe \n");
+                }
         }
     }
 
@@ -218,17 +250,13 @@ function latitud_longitud(&$latitud,&$longitud,$dir){
     } else {
         curl_close($ch);
         $data = json_decode($respuesta, true);
-        foreach ($data as $dir => $value) {
-            $latitud = $value['0']['latitude'];
-            $longitud = $value['0']['longitude'];
+        if($data['error']!=null){
+            echo("Error durante la ejecución de la Api \n");
+        }else{
+            foreach ($data as $dir => $value) {
+                $latitud = $value['0']['latitude'];
+                $longitud = $value['0']['longitude'];
+            }
         }
     }
 }
-/*
-$pedido_1= Pedido::Pedido("1","Ibiza","Madrid");
-$pedido_1->set_estado(Estado_pedido::ENTREGADO);
-$pedido_1->set_Hora_entrega("2016-11-30 03:55:06");
-$pedido_1->set_Hora_recogida("2016-11-30 11:55:06");
-$pedido_1->calcular_tiempo();
-$pedido_1->to_string();
-*/
