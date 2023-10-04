@@ -91,8 +91,13 @@ Escoja una opción: ";
                             $existe=true;
                             if($pedido->get_estado()=="PENDIENTE"){
                                 $estado_correcto="PENDIENTE";
-                                $pedido->set_estado(Estado_pedido::RECOGIDO);
-                                $pedido->set_Hora_recogida(date("Y-m-d H:i:s"));
+                                if($pedido->get_rider()!=null){
+                                    echo("No tiene un rider asignado, no se puede recoger \n");
+                                    break;
+                                }else{
+                                    $pedido->set_estado(Estado_pedido::RECOGIDO);
+                                    $pedido->set_Hora_recogida(date("Y-m-d H:i:s"));
+                                }
                             }
                         }
                     }
