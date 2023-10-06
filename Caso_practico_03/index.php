@@ -4,6 +4,27 @@ require_once "Pedido.php";
 $opcion=0;
 $array_pedidos=array();
 $array_riders=array();
+
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+
+$host = "172.17.0.2";
+$port = 3306;
+$user = "root";
+$password = "test1234";
+
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+$conexion_bd = mysqli_connect($host, $user, $password, 'BD');
+if(!$conexion_bd){
+    echo 'Error conectando a base de datos: ' . mysqli_connect_error();
+    exit;
+}else{
+    get_pedidos($conexion_bd,$array_pedidos);
+    get_riders($conexion_bd,$array_riders);
+}
+
+
+
+
 while($opcion!=9) {
     echo "1. Listar todos los pedidos \n
 2. Listar pedidos pendientes \n
@@ -14,7 +35,15 @@ while($opcion!=9) {
 7. Dar alta rider \n
 8. Asignar rider a pedido \n
 9. Salir \n
-Escoja una opción: ";
+Escoja una opción: \n";
+    /*
+    echo("------RIDERS---------\n");
+    print_r($array_riders);
+    echo("----------------------\n");
+    echo("------PEDIDOS---------\n");
+    print_r($array_pedidos);
+    echo("----------------------\n");
+    */
     $opcion = (int)readline("Escoja una opción:");
     if (gettype($opcion) == "integer") {
         switch ($opcion) {
@@ -41,33 +70,51 @@ Escoja una opción: ";
                 }
                 break;
             case 3:
-                echo("Escribe un id valido:");
-                $id_pedido = (int)readline("Escribe un id valido:");
-                $existe=false;
-                foreach ($array_pedidos as $pedido) {
-                    if ($pedido->get_id() == $id_pedido) {
-                        echo("Id en uso" ."\n");
-                        $existe=true;
+                    echo("Escribe un id valido:");
+                    $id_pedido = (int)readline("Escribe un id valido:");
+                    $existe=false;
+                    foreach ($array_pedidos as $pedido) {
+                        if ($pedido['PK_id'] == $id_pedido) {
+                            echo("Id en uso" ."\n");
+                            $existe=true;
+                        }
                     }
-                }
-                if($existe){
-                    break;
-                }else{
-                    echo("Escribe una direccion de recogida:");
-                    $dir_recogida = (string)readline("Escribe una direccion de recogida:");
-                    echo("Escribe una direccion de entrega:");
-                    $dir_entrega = (string)readline("Escribe una direccion de entrega:");
-                    $latitud_recogida=0;
-                    $longitud_recogida=0;
-                    latitud_longitud($latitud_recogida,$longitud_recogida,$dir_recogida);
-                    $latitud_entrega=0;
-                    $longitud_entrega=0;
-                    latitud_longitud($latitud_entrega,$longitud_entrega,$dir_recogida);
-                    $pedido_1 = Pedido::Pedido($id_pedido, $dir_recogida, $dir_entrega);
-                    $distancia=getDistanceBetweenPointsNew($latitud_recogida,$longitud_recogida,$latitud_entrega,$longitud_entrega);
-                    $pedido_1->set_dist($distancia);
-                    $array_pedidos[] = $pedido_1;
-                    break;
+                    if($existe){
+                        break;
+                    }else{
+                        echo("Escribe una direccion de recogida:");
+                        $dir_recogida = (string)readline("Escribe una direccion de recogida:");
+                        echo("Escribe una direccion de entrega:");
+                        $dir_entrega = (string)readline("Escribe una direccion de entrega:");
+                        $latitud_recogida=0;
+                        $longitud_recogida=0;
+                        latitud_longitud($latitud_recogida,$longitud_recogida,$dir_recogida);
+                        $latitud_entrega=0;
+                        $longitud_entrega=0;
+                        latitud_longitud($latitud_entrega,$longitud_entrega,$dir_recogida);
+                        echo("Escribe la id del Rider a asignar el pedido: \n");
+                        $id_rider=(int)readline("Escribe la id del Rider a asignar el pedido: \n");
+                        $Rider=null;
+                        foreach ($array_riders as $rid){
+                            if($id_rider==$rid['PK_Id']) {
+                                $nombre_rider=$rid['nombre'];
+                                $apellidos_rider=$rid['apellidos'];
+                                $Rider=Rider::Rider($id_rider,$nombre_rider,$apellidos_rider);
+                            }
+                        }
+                        if($Rider==null){
+                            echo("El rider introducido no existe");
+                            break;
+                        }else{
+                            var_dump($Rider);
+                            $pedido_1 = Pedido::Pedido($id_pedido, $dir_recogida, $dir_entrega,$Rider);
+                            $distancia=getDistanceBetweenPointsNew($latitud_recogida,$longitud_recogida,$latitud_entrega,$longitud_entrega);
+                            $pedido_1->set_dist($distancia);
+                            guardar_pedido($conexion_bd,$pedido_1,$array_riders);
+                            $array_pedidos[] = $pedido_1;
+                            break;
+                        }
+
                 }
 
             case 4:
@@ -171,7 +218,7 @@ Escoja una opción: ";
                 echo("Escribe los apellidos del rider:");
                 $apellidos_rider = (string)readline("Escribe los apellidos del rider:");
                 foreach ($array_riders as $rid){
-                    if ($rid->get_nombre() == $nombre_rider && $rid->get_apellidos() == $apellidos_rider){
+                    if ($rid['nombre'] == $nombre_rider && $rid['apellidos'] == $apellidos_rider){
                         $existe=true;
                     }
                 }
@@ -180,6 +227,7 @@ Escoja una opción: ";
                     break;
                 }else{
                     $rider=Rider::Rider(count($array_riders),$nombre_rider,$apellidos_rider);
+                    guardar_rider($conexion_bd,$rider);
                     $array_riders[]=$rider;
                     echo("Rider dado de alta \n");
                     break;
@@ -237,7 +285,100 @@ function getDistanceBetweenPointsNew($latitude1, $longitude1, $latitude2, $longi
     }
     return (round($distance,2));
 }
+function get_pedidos($conexion_bd,&$array_pedidos){
+    $res_pedidos = mysqli_query($conexion_bd, "SELECT * FROM PEDIDO");
+    if($res_pedidos === false){
+        echo 'Query error: ' . mysqli_error($conexion_bd);
+        exit;
+    }
+    while($row_pedido = $res_pedidos->fetch_assoc()){
+        $array_pedidos[]=$row_pedido;
+    }
+}
 
+function get_riders($conexion_bd,&$array_riders){
+    $res_riders = mysqli_query($conexion_bd, "SELECT * FROM RIDER");
+    if($res_riders === false){
+        echo 'Query error: ' . mysqli_error($conexion_bd);
+        exit;
+    }
+    while($row_rider = $res_riders->fetch_assoc()){
+        $array_riders[]=$row_rider;
+    }
+}
+function guardar_rider($conexion_bd,$rider){
+    $id_rider=(int)$rider->get_id();
+    $nombre_rider_table=(string)$rider->get_nombre();
+    $apellidos_rider_table=(string)$rider->get_apellidos();
+    #$query = "INSERT INTO RIDER (PK_id,nombre,apellidos)
+     #     VALUES ($id_rider,$nombre_rider_table, $apellidos_rider_table)";
+    $query = "INSERT INTO RIDER (PK_id,nombre,apellidos)
+          VALUES ('$id_rider','$nombre_rider_table', '$apellidos_rider_table')";
+    $res_insert = mysqli_query($conexion_bd, $query);
+    if($res_insert === false){
+        echo 'Query error: ' . mysqli_error($conexion_bd);
+        exit;
+    }
+    $pk_id_pedido = mysqli_insert_id($conexion_bd);
+    if(!$pk_id_pedido){
+        echo 'Error obteniendo PK del pedido insertado';
+        exit;
+    }
+    echo 'Pedido insertado con PK ' . $pk_id_pedido . PHP_EOL;
+}
+function guardar_pedido($conexion_bd,$pedido,$array_riders){
+
+    $distancia=$pedido->get_dist();
+    if($distancia=="-"){
+        $distancia=null;
+    }
+    $hora_recogida=$pedido->get_hora_recogida();
+    if($hora_recogida=="-"){
+        $hora_recogida=null;
+    }
+    $hora_entrega=$pedido->get_hora_entrega();
+    if($hora_entrega=="-"){
+        $hora_entrega=null;
+    }
+
+    $Pedido_Rider=$pedido->get_Rider();
+    if($Pedido_Rider==null){
+        $id_pedido_rider=null;
+    }else{
+        $id_pedido_rider=$Pedido_Rider->get_id();
+    }
+    get_riders($conexion_bd,$array_riders);
+    $query_desactivar_cheks="SET FOREIGN_KEY_CHECKS=0";
+    mysqli_query($conexion_bd, $query_desactivar_cheks);
+    $id_pedido_insert=$pedido->get_id();
+    $estado_pedido_insert=$pedido->get_estado();
+    $dir_recogida_insert=$pedido->get_dir_recog();
+    $dir_entrega_insert=$pedido->get_dir_entrega();
+    $tiempo_insert=$pedido->get_Tiempo();
+    echo("########################\n");
+    echo("########################\n");
+    echo("$id_pedido_rider\n");
+    echo("########################\n");
+    echo("########################\n");
+            $query = "INSERT INTO PEDIDO (PK_id,Estado,Direccion_recogida,Hora_recogida,Direccion_entrega,Hora_entrega,Tiempo_entrega,Distancia,FK_ID_Rider)
+          VALUES ('$id_pedido_insert','$estado_pedido_insert','$dir_recogida_insert','$hora_recogida', '$dir_entrega_insert','$hora_entrega','$tiempo_insert','$distancia','$id_pedido_rider')";
+            $res_insert = mysqli_query($conexion_bd, $query);
+            if($res_insert === false){
+                echo 'Query error: ' . mysqli_error($conexion_bd);
+                exit;
+            }
+            $pk_id_pedido = mysqli_insert_id($conexion_bd);
+            if(!$pk_id_pedido){
+                echo 'Error obteniendo PK del pedido insertado';
+                exit;
+            }
+            echo 'Pedido insertado con PK ' . $pk_id_pedido . PHP_EOL;
+            $query_activar_cheks="SET FOREIGN_KEY_CHECKS=1";
+            mysqli_query($conexion_bd, $query_activar_cheks);
+
+
+
+}
 function latitud_longitud(&$latitud,&$longitud,$dir){
     $dir_recogida_arr = explode(" ", $dir);
     $recogida_geo = $dir_recogida_arr[0];

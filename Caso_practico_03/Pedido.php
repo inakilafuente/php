@@ -21,9 +21,10 @@ class Pedido{
         $this->Direccion_entrega=$Direccion_entrega;
         $this->Hora_entrega=$Hora_entrega;
         $this->Tiempo_entrega=$Tiempo_entrega;
+        $this->rider=$rider;
     }
-    public static function Pedido($id, $Direccion_recogida, $Direccion_entrega){
-        return new self($id, $Direccion_recogida, "-", $Direccion_entrega, "-","-",Estado_pedido::PENDIENTE,0,null);
+    public static function Pedido($id, $Direccion_recogida, $Direccion_entrega,$rider){
+        return new self($id, $Direccion_recogida, "-", $Direccion_entrega, "-","-",Estado_pedido::PENDIENTE,0,$rider);
     }
     public function get_id(){
         return $this->id;
@@ -31,7 +32,7 @@ class Pedido{
     public function get_dir_recog(){
         return $this->Direccion_recogida;
     }
-    public function get_dir_entreg(){
+    public function get_dir_entrega(){
         return $this->Direccion_entrega;
     }
     public function get_estado(){
@@ -70,6 +71,9 @@ class Pedido{
         return $this->Tiempo_entrega;
     }
 
+    public  function get_dist(){
+        return $this->dist;
+    }
     public function set_dist($dist){
         $this->dist=$dist;
     }
@@ -87,24 +91,24 @@ class Pedido{
             "\t" ."Dirección de entrega: ".$this->Direccion_entrega. "\n".
             "\t" ."Hora de entrega: ".$this->Hora_entrega ."\n".
             "\t" ."Tiempo de entrega: ");
-        if($this->Tiempo_entrega!="-"){
-            /*
-            $hours = floor($this->Tiempo_entrega / 3600);
-            $minutes = floor(($this->Tiempo_entrega / 60) % 60);
-            $seconds = $this->Tiempo_entrega % 60;
-            echo($hours."horas ".$minutes."minutos ".$seconds."segundos \n");
-            */
-            echo($this->Tiempo_entrega. " segundos \n");
-        }
-        else{
-            echo($this->Tiempo_entrega. "\n");
-        }
-        echo("\tDistancia: ".$this->dist." km\n");
-        if($this->rider==null){
-            echo("\tAsignado a: -\n");
-        }else{
-            echo("\tAsignado a: ".$this->rider->get_nombre()." ".$this->rider->get_apellidos()."\n");
-        }
+            if($this->Tiempo_entrega!="-"){
+                /*
+                $hours = floor($this->Tiempo_entrega / 3600);
+                $minutes = floor(($this->Tiempo_entrega / 60) % 60);
+                $seconds = $this->Tiempo_entrega % 60;
+                echo($hours."horas ".$minutes."minutos ".$seconds."segundos \n");
+                */
+                echo($this->Tiempo_entrega. " segundos \n");
+            }
+            else{
+                echo($this->Tiempo_entrega. "\n");
+            }
+            echo("\tDistancia: ".$this->dist." km\n");
+            if($this->rider==null){
+                echo("\tAsignado a: -\n");
+            }else{
+                echo("\tAsignado a: ".$this->rider->get_nombre()." ".$this->rider->get_apellidos()."\n");
+            }
 
 
     }
