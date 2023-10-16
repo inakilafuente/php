@@ -17,10 +17,9 @@ $conexion_bd = mysqli_connect($host, $user, $password, 'BD');
 if(!$conexion_bd){
     echo 'Error conectando a base de datos: ' . mysqli_connect_error();
     exit;
-}else{
-    get_pedidos($conexion_bd,$array_pedidos);
-    get_riders($conexion_bd,$array_riders);
 }
+
+
 
 
 
@@ -48,6 +47,7 @@ Escoja una opción: \n";
     if (gettype($opcion) == "integer") {
         switch ($opcion) {
             case 1:
+                get_pedidos($conexion_bd,$array_pedidos);
                 if(count($array_pedidos)<1){
                     echo("No tienes ningun pedido". "\n");
                     break;
@@ -58,6 +58,7 @@ Escoja una opción: \n";
                 }
                 break;
             case 2:
+                get_pedidos($conexion_bd,$array_pedidos);
                 if(count($array_pedidos)<1){
                     echo("No tienes ningun pedido pendiente". "\n");
                     break;
@@ -70,6 +71,8 @@ Escoja una opción: \n";
                 }
                 break;
             case 3:
+                    get_pedidos($conexion_bd,$array_pedidos);
+                    get_riders($conexion_bd,$array_riders);
                     echo("Escribe un id valido:");
                     $id_pedido = (int)readline("Escribe un id valido:");
                     $existe=false;
@@ -119,6 +122,7 @@ Escoja una opción: \n";
 
             case 4:
                 $en_curso=false;
+                get_pedidos($conexion_bd,$array_pedidos);
                 foreach ($array_pedidos as $pedido) {
                     if($pedido->get_estado()=="RECOGIDO"){
                         $en_curso=true;
@@ -161,6 +165,7 @@ Escoja una opción: \n";
                 }
 
             case 5:
+                get_pedidos($conexion_bd,$array_pedidos);
                 echo("Escribe un id valido:");
                 $id_pedido = (int)readline("Escribe un id valido:");
                 $existe=false;
@@ -187,6 +192,7 @@ Escoja una opción: \n";
                 echo("Pedido entregado \n");
                 break;
             case 6:
+                get_pedidos($conexion_bd,$array_pedidos);
                 echo("Escribe un id valido:");
                 $id_pedido = (int)readline("Escribe un id valido:");
                 $existe=false;
@@ -212,6 +218,7 @@ Escoja una opción: \n";
                     break;
                 }
             case 7:
+                get_riders($conexion_bd,$array_riders);
                 $existe=false;
                 echo("Escribe el nombre del rider:");
                 $nombre_rider = (string)readline("Escribe el nombre del rider:");
@@ -233,6 +240,7 @@ Escoja una opción: \n";
                     break;
                 }
             case 8:
+                get_riders($conexion_bd,$array_riders);
                 $existe_pedido=false;
                 $existe_rider=false;
                 echo("-----------------------\n");
@@ -247,6 +255,7 @@ Escoja una opción: \n";
                 echo("Escribe el id del pedido a asignar:");
                 $id_pedido = (int)readline("Escribe el id del pedido a asignar:");
                 $rider=null;
+                get_pedidos($conexion_bd,$array_pedidos);
                 foreach ($array_riders as $rid){
                     if($rid->get_id()==$id_rider){
                         $existe_rider=true;
