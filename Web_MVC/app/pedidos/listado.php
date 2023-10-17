@@ -30,10 +30,20 @@ $filtros=array();
 $Ref=null;
 $Rider=null;
 $Estado=null;
-if (count($_GET)>0){
-    $Ref=$_GET['txReferencia'];
+//var_dump(($_GET));
+    $keys_get=array_keys($_GET);
+    //print_r($keys_get);
+    if(in_array("txReferencia",$keys_get)){
+        $Ref=$_GET['txReferencia'];
+    }
+    if(in_array("selRider",$keys_get)){
     $Rider=$_GET['selRider'];
+    }
+
+    if(in_array("selEstado",$keys_get)){
     $Estado=$_GET['selEstado'];
+    }
+
     if($Ref!=null || $Ref!="" || $Ref!="-"){
         $filtros["REF"]=$Ref;
         //var_dump($filtros["REF"]);
@@ -44,7 +54,7 @@ if (count($_GET)>0){
     if($Estado!=null || $Estado!="" || $Estado!="-"){
         $filtros["EST"]=$Estado;
     }
-}
+
 
 
 
@@ -110,35 +120,46 @@ function get_pedidos($conexion_bd,$array_pedidos,$filtros){
     echo($filtros['EST']."\n");
     */
 
-    //print_r($filtros);
     $filtro_keys=array_keys($filtros);
-    if(count($filtros)>0){
+
+    if($filtros["REF"]!="" && $filtros["REF"]!="-" || $filtros["RID"]!="" && $filtros["RID"]!="-" || $filtros["EST"]!="" && $filtros["EST"]!="-"){
         $query.=" WHERE ";
-            foreach($filtro_keys as $filtro) {
-                echo($filtros[$filtro]."\n");
-                if ($filtro == "REF") {
-                    if ($filtros[$filtro] != "-" || $filtros[$filtro] != "") {
-                        echo("HOLA");
-                        $query .= "Referencia=" . $filtros[$filtro];
-                        $query .= " AND ";
-                    }
+        //var_dump($_GET);
+        foreach($filtro_keys as $filtro) {
+            if ($filtro == "REF") {if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
+                    $query .= "Referencia=" . $filtros[$filtro];
+                    $query .= " AND ";
                 }
-                if ($filtro == "RID") {
-                    if ($filtros[$filtro] != "-" || $filtros[$filtro] != "") {
-                        $query .= "FK_ID_Rider=" . $filtros[$filtro];
-                        $query .= " AND ";
-                    }
+            }
 
+            if ($filtro == "RID") {
+                if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
+                    $query .= "FK_ID_Rider=" . $filtros[$filtro];
+                    $query .= " AND ";
                 }
-                if ($filtro == "EST") {
-                    if ($filtros[$filtro] != "-" || $filtros[$filtro] != "") {
-                        $query .= "Estado=" . $filtros[$filtro];
-                    }
+
+            }
+            if ($filtro == "EST") {
+                if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
+                        if ($filtros[$filtro]=="PENDIENTE") {
+                            $filtros["EST"]=0;
+                        }elseif ($filtros[$filtro]=="RECOGIDO") {
+                            $filtros["EST"]=1;
+                        }elseif ($filtros[$filtro]=="ENTREGADO") {
+                            $filtros["EST"]=2;
+                        }
+                    $query .= "Estado=" . $filtros[$filtro];
+                    $query .= " AND ";
                 }
+            }
         }
-
+        $query = substr($query, 0, -4);
     }
+/*
+    echo("----------------- \n");
     echo($query);
+    echo("----------------- \n");
+*/
         #p.Referencia=".$filtros['REF']." AND p.FK_ID_RIDER=".$filtros['RID']." AND p.Estado=".$filtros['EST'];
 
     $res_pedidos = mysqli_query($conexion_bd, $query);

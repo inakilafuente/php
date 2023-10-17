@@ -4,14 +4,11 @@
         Rider:
         <select name="selRider">
 
-            <option selected>-</option>
-
-
-
+            <option>-</option>
             <?php
             $i=0;
             foreach($res_riders as $row_rider): ?>
-                <option value="<?php $i+1; ?>"><?php echo($row_rider['PK_Id']);?></option>
+                <option><?php echo($row_rider['PK_Id']);?></option>
             <?php endforeach; ?>
 
 
@@ -19,7 +16,7 @@
         Estado:
         <select name="selEstado">
 
-            <option selected>-</option>
+            <option>-</option>
             <!--
             <option value="1">Pendiente</option>
             <option value="2">Recogido</option>
@@ -28,7 +25,7 @@
             <?php
             $i=0;
             foreach($res_estados as $row_estado): ?>
-                <option value="<?php $i+1; ?>"><?php echo($row_estado);?></option>
+                <option><?php echo($row_estado);?></option>
             <?php endforeach; ?>
         </select>
         <input type="submit" value="Buscar">
@@ -51,8 +48,8 @@
                         <td><a href="ficha.php?id=?"><?php echo($row_pedido['Referencia']);?></a></td>
                         <td><?php echo($row_pedido['nombre']." ".$row_pedido['apellidos']); ?></td>
                         <td><?php echo($row_pedido['Fecha_creacion']); ?></td>
-                        <td><?php echo($row_pedido['Dirección_recogida']); ?></td>
-                        <td><?php echo($row_pedido['Dirección_entrega']); ?></td>
+                        <td><?php echo($row_pedido['Direccion_recogida']); ?></td>
+                        <td><?php echo($row_pedido['Direccion_entrega']); ?></td>
                         <td><?php echo($row_pedido['Distancia']); ?></td>
                         <td><?php
                             if ($row_pedido['Estado']==0) {
@@ -71,3 +68,5 @@
         <?php endif;?>
     </div>
 </form>
+
+<button class="btn btn-success" onclick=" window.open('ficha.php','_blank')">Nuevo Pedido</button>
