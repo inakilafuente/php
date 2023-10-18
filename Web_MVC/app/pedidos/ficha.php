@@ -10,20 +10,34 @@ if(!$conexion_bd){
     echo 'Error conectando a base de datos: ' . mysqli_connect_error();
     exit;
 }
-$array_pedido=array();
-$id_pedido = $_GET['id'];
-$pedido=get_pedido($conexion_bd,$array_pedido,$id_pedido);
+$nuevo_pedido=False;
+$res_estados = array();
+$res_estados[0]="PENDIENTE";
+$res_estados[1]="RECOGIDO";
+$res_estados[2]="ENTREGADO";
+if(in_array('btn_nuevo_pedido',$_GET)){
+    echo("HOLA");
+    $nuevo_pedido=True;
+}else{
+    $array_pedido=array();
+    $id_pedido = $_GET['id'];
+    $pedido=get_pedido($conexion_bd,$array_pedido,$id_pedido);
 print_r($pedido);
+var_dump($pedido[0]['Hora_recogida']);
+
+    if(empty($id_pedido)){
+        echo 'Pedido no encontrado';
+        http_response_code(404);
+        return;
+    }
+}
+
 // Comprobar que exista el pedido recibido...
 // ¿Qué hacemos si queremos crear un pedido nuevo?
 
-/*
-if(empty($id_pedido)){
-    echo 'Pedido no encontrado';
-    http_response_code(404);
-    return;
-}
-*/
+
+
+
 //$row_pedido = $base_datos->get_pedido($id_pedido);
 
 require_once 'views/ficha.php';

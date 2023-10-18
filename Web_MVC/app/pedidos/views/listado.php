@@ -45,7 +45,7 @@
                 <tbody>
                 <?php foreach($res_pedidos as $row_pedido):?>
                     <tr>
-                        <td><a href="ficha.php?id=?"><?php echo($row_pedido['Referencia']);?></a></td>
+                        <td><a href="ficha.php?id=<?php echo($row_pedido['Referencia']);?>"><?php echo($row_pedido['Referencia']);?></a></td>
                         <td><?php echo($row_pedido['nombre']." ".$row_pedido['apellidos']); ?></td>
                         <td><?php echo($row_pedido['Fecha_creacion']); ?></td>
                         <td><?php echo($row_pedido['Direccion_recogida']); ?></td>
@@ -69,4 +69,4 @@
     </div>
 </form>
 
-<button class="btn btn-success" onclick=" window.open('ficha.php','_blank')">Nuevo Pedido</button>
+<button class="btn btn-success" name="btn_nuevo_pedido" onclick=" window.open('ficha.php?btn_nuevo_pedido=true','_blank')">Nuevo Pedido</button>
