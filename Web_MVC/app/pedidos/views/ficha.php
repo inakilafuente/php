@@ -1,10 +1,10 @@
-<form action="" method="get">
+<form action="" method="post">
     <fieldset>
         <?php if(!$nuevo_pedido): ?>
         <legend>Ficha articulo:</legend>
         <label for="fname">ID:</label><br>
-        <input type="text" id="fname" name="fname" disabled value=<?php echo($pedido[0]["PK_id"]); ?>> <br><br>
-        Estado:<br>
+        <input type="text" id="fname" name="id_pedido" value=<?php echo($pedido[0]["PK_id"]); ?> readonly > <br><br>
+            Estado:<br>
         <?php
             if($pedido[0]["Estado"]==0){
                 $estado_pedido="PENDIENTE";
@@ -26,29 +26,34 @@
                 <?php
                 endif;
                 endforeach;?>
+            <?php if($error_estado): ?>
+                <label for="lname"><?php echo ($error_estado_msg);?></label><br>
+            <?php endif;?>
             </select><br><br>
         <label for="fname">Direccion recogida:</label><br>
-        <input type="text" id="fname" name="fname" disabled value=<?php echo($pedido[0]["Direccion_recogida"]); ?>><br><br>
+        <input type="text" id="fname" name="txtDir_recog"  value=<?php echo($pedido[0]["Direccion_recogida"]); ?>><br><br>
         <label for="lname">Hora recogida:</label><br>
         <?php $date_recogida = strtotime($pedido[0]["Hora_recogida"]);
             ?>
-        <input type="datetime-local" id="lname" name="lname" value=<?php echo date('Y-m-d\TH:i', $date_recogida); ?>><br><br>
+        <input type="datetime-local" id="lname" name="date_recog" value=<?php echo date('Y-m-d\TH:i', $date_recogida); ?>><br><br>
         <label for="fname">Direccion entrega:</label><br>
-        <input type="text" id="fname" name="fname" disabled value=<?php echo($pedido[0]["Direccion_entrega"]);?>><br><br>
+        <input type="text" id="fname" name="txtDir_entreg"  value=<?php echo($pedido[0]["Direccion_entrega"]);?>><br><br>
         <label for="lname">Hora entrega:</label><br>
             <?php $date_entrega = strtotime($pedido[0]["Hora_entrega"]);
             ?>
-        <input type="datetime-local" id="lname"  name="lname" value=<?php echo date('Y-m-d\TH:i', $date_entrega); ?>><br><br>
+        <input type="datetime-local" id="lname"  name="date_entreg" value=<?php echo date('Y-m-d\TH:i', $date_entrega); ?>><br><br>
         <label for="fname">Tiempo entrega:</label><br>
-        <input type="text" id="fname" name="fname" disabled value=<?php echo($pedido[0]["Tiempo_entrega"]); ?>><br><br>
+        <input type="text" id="fname" name="txtTiempo"  value=<?php echo($pedido[0]["Tiempo_entrega"]); ?> readonly  ><br><br>
         <label for="lname">Distancia:</label><br>
-        <input type="text" id="lname" name="lname" disabled value=<?php echo($pedido[0]["Distancia"]); ?>><br><br>
+        <input type="text" id="lname" name="txtDist"  value=<?php echo($pedido[0]["Distancia"]); ?> readonly><br><br>
         <label for="fname">Referencia:</label><br>
-        <input type="text" id="fname" name="fname" disabled value=<?php echo($pedido[0]["Referencia"]); ?>><br><br>
+        <input type="text" id="fname" name="id"  value=<?php echo($pedido[0]["Referencia"]); ?> readonly><br><br>
         <label for="lname">Fecha creacion:</label><br>
-        <input type="text" id="lname" name="lname" disabled value=<?php echo($pedido[0]["Fecha_creacion"]); ?>><br><br>
+            <?php $date_crecion = strtotime($pedido[0]["Fecha_creacion"]);
+            ?>
+        <input type="datetime-local" id="lname" name="date_crecion"  value=<?php echo date('Y-m-d\TH:i', $date_crecion); ?> readonly><br><br>
         <label for="lname">ID Rider:</label><br>
-        <input type="text" id="lname" name="lname" disabled value=<?php echo($pedido[0]["FK_ID_Rider"]); ?>><br><br>
+        <input type="text" id="lname" name="fk_idRider"  value=<?php echo($pedido[0]["FK_ID_Rider"]); ?>><br><br>
         <input type="submit" value="Modificar pedido">
 
 
@@ -57,8 +62,9 @@
         <?php else: ?>
         <legend>Ficha nuevo articulo:</legend>
         <label for="fname">ID:</label><br>
-        <input type="text" id="fname" name="fname" disabled value=""> <br><br>
-            <select name="selEstado">
+        <input type="text" id="fname" name="id_pedido"  value=<?php echo($id_disponible); ?> readonly> <br><br>
+            Estado:<br>
+            <select name="selectEstado">
                 <option>-</option>
                 <?php
                 foreach($res_estados as $row_estado): ?>
@@ -66,23 +72,23 @@
                 <?php endforeach; ?>
             </select><br><br>
         <label for="fname">Direccion recogida:</label><br>
-        <input type="text" id="fname" name="fname" disabled value=""><br><br>
+        <input type="text" id="fname" name="txtDir_recog" value=""><br><br>
         <label for="lname">Hora recogida:</label><br>
-        <input type="datetime-local" id="lname" disabled name="lname" value=""><br><br>
+        <input type="datetime-local" id="lname"  name="date_recog" value="" ><br><br>
         <label for="fname">Direccion entrega:</label><br>
-        <input type="text" id="fname" name="fname" disabled value=""><br><br>
+        <input type="text" id="fname" name="txtDir_entreg"  value=""><br><br>
         <label for="lname">Hora entrega:</label><br>
-        <input type="datetime-local" id="lname" disabled name="lname" value=""><br><br>
+        <input type="datetime-local" id="lname"  name="date_entreg" value=""><br><br>
         <label for="fname">Tiempo entrega:</label><br>
-        <input type="text" id="fname" name="fname" disabled value=""><br><br>
+        <input type="text" id="fname" name="txtTiempo"  value="" readonly><br><br>
         <label for="lname">Distancia:</label><br>
-        <input type="text" id="lname" name="lname" disabled value=""><br><br>
+        <input type="text" id="lname" name="txtDist"  value="" readonly><br><br>
         <label for="fname">Referencia:</label><br>
-        <input type="text" id="fname" name="fname" disabled value=""><br><br>
+        <input type="text" id="fname" name="id"  value=""><br><br>
         <label for="lname">Fecha creacion:</label><br>
-        <input type="text" id="lname" name="lname" disabled value=""><br><br>
+        <input type="datetime-local" id="lname" name="date_crecion"  value=""><br><br>
         <label for="lname">ID Rider:</label><br>
-        <input type="text" id="lname" name="lname" disabled value=""><br><br>
+        <input type="text" id="lname" name="fk_idRider"  value="" readonly><br><br>
         <input type="submit" value="Crear pedido">
 
         <?php endif; ?>

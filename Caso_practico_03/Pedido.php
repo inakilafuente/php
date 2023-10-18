@@ -3,6 +3,7 @@ require_once "Estado_pedido.php";
 require_once "Rider.php";
 class Pedido{
     private $id;
+    private $ref;
     private $estado_pedido;
     private $Direccion_recogida;
     private $Hora_recogida;
@@ -10,17 +11,21 @@ class Pedido{
     private $Hora_entrega;
     private $Tiempo_entrega;
     private $dist;
+
+    private $Fecha_creacion;
     private $rider;
 
-    public function __construct($id, $Direccion_recogida, $Hora_recogida,$Direccion_entrega,$Hora_entrega,$Tiempo_entrega,$estado_pedido,$dist,$rider)
+    public function __construct($id, $ref,$Direccion_recogida, $Hora_recogida,$Direccion_entrega,$Hora_entrega,$Tiempo_entrega,$estado_pedido,$dist,$Fecha_creacion,$rider)
     {
         $this->id = $id;
+        $this->ref=$ref;
         $this->estado_pedido = $estado_pedido;
         $this->Direccion_recogida = $Direccion_recogida;
         $this->Hora_recogida = $Hora_recogida;
         $this->Direccion_entrega=$Direccion_entrega;
         $this->Hora_entrega=$Hora_entrega;
         $this->Tiempo_entrega=$Tiempo_entrega;
+        $this->Fecha_creacion=$Fecha_creacion;
         $this->rider=$rider;
     }
     public static function Pedido($id, $Direccion_recogida, $Direccion_entrega,$rider){
