@@ -1,9 +1,10 @@
 <form action="" method="post">
     <fieldset>
         <?php if(!$nuevo_pedido): ?>
+            <?php var_dump($pedido[0]);?>
         <legend>Ficha articulo:</legend>
         <label for="fname">ID:</label><br>
-        <input type="text" id="fname" name="id_pedido" value=<?php echo($pedido[0]["PK_id"]); ?> readonly > <br><br>
+        <input type="text" id="fname" name="id_pedido" value=<?php echo($pedido[0]["PK_id"]);?> readonly><br><br>
             Estado:<br>
         <?php
             if($pedido[0]["Estado"]==0){
@@ -31,13 +32,13 @@
             <?php endif;?>
             </select><br><br>
         <label for="fname">Direccion recogida:</label><br>
-        <input type="text" id="fname" name="txtDir_recog"  value=<?php echo($pedido[0]["Direccion_recogida"]); ?>><br><br>
+        <input type="text" id="fname" name="txtDir_recog"  value='<?php echo($pedido[0]["Direccion_recogida"]);?>'><br><br>
         <label for="lname">Hora recogida:</label><br>
         <?php $date_recogida = strtotime($pedido[0]["Hora_recogida"]);
             ?>
         <input type="datetime-local" id="lname" name="date_recog" value=<?php echo date('Y-m-d\TH:i', $date_recogida); ?>><br><br>
         <label for="fname">Direccion entrega:</label><br>
-        <input type="text" id="fname" name="txtDir_entreg"  value=<?php echo($pedido[0]["Direccion_entrega"]);?>><br><br>
+        <input type="text" id="fname" name="txtDir_entreg"  value='<?php echo($pedido[0]["Direccion_entrega"]);?>'><br><br>
         <label for="lname">Hora entrega:</label><br>
             <?php $date_entrega = strtotime($pedido[0]["Hora_entrega"]);
             ?>
@@ -49,9 +50,7 @@
         <label for="fname">Referencia:</label><br>
         <input type="text" id="fname" name="id"  value=<?php echo($pedido[0]["Referencia"]); ?> readonly><br><br>
         <label for="lname">Fecha creacion:</label><br>
-            <?php $date_crecion = strtotime($pedido[0]["Fecha_creacion"]);
-            ?>
-        <input type="datetime-local" id="lname" name="date_crecion"  value=<?php echo date('Y-m-d\TH:i', $date_crecion); ?> readonly><br><br>
+        <input type="datetime-local" id="lname" name="date_crecion"  value=<?php echo date('Y-m-d\TH:i', $date_creacion); ?> readonly><br><br>
         <label for="lname">ID Rider:</label><br>
         <input type="text" id="lname" name="fk_idRider"  value=<?php echo($pedido[0]["FK_ID_Rider"]); ?>><br><br>
         <input type="submit" value="Modificar pedido">
@@ -86,7 +85,7 @@
         <label for="fname">Referencia:</label><br>
         <input type="text" id="fname" name="id"  value=""><br><br>
         <label for="lname">Fecha creacion:</label><br>
-        <input type="datetime-local" id="lname" name="date_crecion"  value=""><br><br>
+        <input type="datetime-local" id="lname" name="date_crecion"  value=<?php echo ($date_creacion); ?> readonly><br><br>
         <label for="lname">ID Rider:</label><br>
         <input type="text" id="lname" name="fk_idRider"  value="" readonly><br><br>
         <input type="submit" value="Crear pedido">

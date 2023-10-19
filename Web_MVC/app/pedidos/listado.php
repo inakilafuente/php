@@ -113,7 +113,7 @@ require_once 'views/listado.php';
 
 
 function get_pedidos($conexion_bd,$array_pedidos,$filtros){
-    $query="SELECT * FROM PEDIDO p JOIN RIDER r ON p.FK_ID_Rider=r.PK_Id";
+    $query="SELECT * FROM PEDIDO p LEFT JOIN RIDER r ON p.FK_ID_Rider=r.PK_Id";
     /*
     echo($filtros['REF']."\n");
     echo($filtros['RID']."\n");
