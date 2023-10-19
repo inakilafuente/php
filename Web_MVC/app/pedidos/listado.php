@@ -34,7 +34,7 @@ $Estado=null;
     $keys_get=array_keys($_GET);
     //print_r($keys_get);
     if(in_array("txReferencia",$keys_get)){
-        $Ref=$_GET['txReferencia'];
+        $Ref=addslashes($_GET['txReferencia']);
     }
     if(in_array("selRider",$keys_get)){
     $Rider=$_GET['selRider'];

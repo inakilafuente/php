@@ -1,4 +1,4 @@
-<form action="" method="get">
+<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="get">
     <div>
         Referencia: <input type="text" name="txReferencia" value="">
         Rider:

@@ -25,16 +25,16 @@ $array_riders_disponibles=array();
 
 if(array_key_exists("id", $_POST)){
     $id_pedido=$_POST['id_pedido'];
-    $ref=$_POST['id'];
+    $ref=addslashes($_POST['id']);
     $estado=$_POST['selectEstado'];
-    $dir_recog=$_POST['txtDir_recog'];
+    $dir_recog=addslashes($_POST['txtDir_recog']);
     $date_recog=$_POST['date_recog'];
-    $dir_entreg=$_POST['txtDir_entreg'];
+    $dir_entreg=addslashes($_POST['txtDir_entreg']);
     $date_entreg=$_POST['date_entreg'];
     $tiempo=$_POST['txtTiempo'];
     $dist=$_POST['txtDist'];
     $date_creacion=$_POST['date_crecion'];
-    $fk_id_rider=$_POST['fk_idRider'];
+    $fk_id_rider=addslashes($_POST['fk_idRider']);
 }
 
 
@@ -45,7 +45,7 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
 
     $date_creacion=date('Y-m-d\TH:i');
     if(array_key_exists('id', $_POST)){
-        $ref=$_POST['id'];
+        $ref=addslashes($_POST['id']);
         $array_pedidos_disponibles=get_pedidos($conexion_bd,$array_pedidos_disponibles);
         $error_ref_existe=false;
         foreach($array_pedidos_disponibles as $pedido){
@@ -56,7 +56,7 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
             }
         }
         if(!$error_ref_existe){
-            $ref=$_POST['id'];
+            $ref=addslashes($_POST['id']);
         }
         $estado=$_POST['selectEstado'];
         $error_estado=false;
@@ -74,9 +74,9 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
         if($estado=="ENTREGADO"){
             $estado=2;
         }
-        $dir_recog=$_POST['txtDir_recog'];
+        $dir_recog=addslashes($_POST['txtDir_recog']);
         $date_recog=$_POST['date_recog'];
-        $dir_entreg=$_POST['txtDir_entreg'];
+        $dir_entreg=addslashes($_POST['txtDir_entreg']);
         $date_entreg=$_POST['date_entreg'];
         $tiempo=$_POST['txtTiempo'];
         if($date_recog!=null && $date_entreg!=null){
@@ -113,7 +113,7 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
     if(array_key_exists('id', $_GET)){
         $array_pedido=array();
         $pedidos=array();
-        $id_pedido = $_GET['id'];
+        $id_pedido = addslashes($_GET['id']);
 
             $pedidos=get_pedidos($conexion_bd,$pedidos);
             $existe=false;
@@ -131,7 +131,7 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
         $date_creacion=strtotime($pedido[0]['Fecha_creacion']);
         if(array_key_exists('id', $_POST)){
             $id_disponible=$_POST['id_pedido'];
-            $ref=$_POST['id'];
+            $ref=addslashes($_POST['id']);
             $estado=$_POST['selectEstado'];
             if($estado!="PENDIENTE" && $estado!="RECOGIDO" && $estado!="ENTREGADO"){
                 $error_estado=true;
@@ -147,9 +147,9 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
             if($estado=="ENTREGADO"){
                 $estado=2;
             }
-            $dir_recog=$_POST['txtDir_recog'];
+            $dir_recog=addslashes($_POST['txtDir_recog']);
             $date_recog=$_POST['date_recog'];
-            $dir_entreg=$_POST['txtDir_entreg'];
+            $dir_entreg=addslashes($_POST['txtDir_entreg']);
             $date_entreg=$_POST['date_entreg'];
             $tiempo=$_POST['txtTiempo'];
             if($date_recog!=null && $date_entreg!=null){
@@ -159,7 +159,7 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
             }
             $dist=$_POST['txtDist'];
             $date_creacion=$_POST['date_crecion'];
-            $fk_id_rider=$_POST['fk_idRider'];
+            $fk_id_rider=addslashes($_POST['fk_idRider']);
             $pedido=new Pedido($id_disponible,$ref,$dir_recog,$date_recog,$dir_entreg,$date_entreg,$tiempo,$estado,$dist,$date_creacion,$fk_id_rider);
             actualizar_pedido($conexion_bd,$pedido);
             $pedido=get_pedido($conexion_bd,$array_pedido,$id_pedido);

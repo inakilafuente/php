@@ -1,7 +1,6 @@
-<form action="" method="post">
+<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
     <fieldset>
         <?php if(!$nuevo_pedido): ?>
-            <?php var_dump($pedido[0]);?>
         <legend>Ficha articulo:</legend>
         <label for="fname">ID:</label><br>
         <input type="text" id="fname" name="id_pedido" value=<?php echo($pedido[0]["PK_id"]);?> readonly><br><br>
@@ -70,6 +69,9 @@
                     <option><?php echo($row_estado);?></option>
                 <?php endforeach; ?>
             </select><br><br>
+            <?php if($error_estado): ?>
+                <label for="lname"><?php echo ($error_estado_msg);?></label>
+            <?php endif;?>
         <label for="fname">Direccion recogida:</label><br>
         <input type="text" id="fname" name="txtDir_recog" value=""><br><br>
         <label for="lname">Hora recogida:</label><br>
@@ -84,6 +86,9 @@
         <input type="text" id="lname" name="txtDist"  value="" readonly><br><br>
         <label for="fname">Referencia:</label><br>
         <input type="text" id="fname" name="id"  value=""><br><br>
+            <?php if($error_ref_existe): ?>
+                <label for="lname"><?php echo ($error_ref_exist_msg);?></label>
+            <?php endif;?>
         <label for="lname">Fecha creacion:</label><br>
         <input type="datetime-local" id="lname" name="date_crecion"  value=<?php echo ($date_creacion); ?> readonly><br><br>
         <label for="lname">ID Rider:</label><br>
