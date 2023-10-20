@@ -127,7 +127,7 @@ function get_pedidos($conexion_bd,$array_pedidos,$filtros){
         //var_dump($_GET);
         foreach($filtro_keys as $filtro) {
             if ($filtro == "REF") {if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
-                    $query .= "Referencia=" . $filtros[$filtro];
+                    $query .= "Referencia like" . $filtros[$filtro];
                     $query .= " AND ";
                 }
             }

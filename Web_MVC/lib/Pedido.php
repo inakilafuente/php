@@ -41,11 +41,11 @@ class Pedido{
         return $this->Direccion_entrega;
     }
     public function get_estado(){
-        if ($this->estado_pedido==1) {
+        if ($this->estado_pedido==0) {
             return 'PENDIENTE';
-        }elseif ($this->estado_pedido==2) {
+        }elseif ($this->estado_pedido==1) {
             return 'RECOGIDO';
-        }elseif ($this->estado_pedido==3) {
+        }elseif ($this->estado_pedido==2) {
             return 'ENTREGADO';
         }
     }
