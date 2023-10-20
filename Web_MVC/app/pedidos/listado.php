@@ -119,22 +119,26 @@ function get_pedidos($conexion_bd,$array_pedidos,$filtros){
     echo($filtros['RID']."\n");
     echo($filtros['EST']."\n");
     */
-
     $filtro_keys=array_keys($filtros);
 
     if($filtros["REF"]!="" && $filtros["REF"]!="-" || $filtros["RID"]!="" && $filtros["RID"]!="-" || $filtros["EST"]!="" && $filtros["EST"]!="-"){
         $query.=" WHERE ";
+        print_r($filtros);
+        $nombre_apellidos = explode(" ", $filtros["RID"]);
+        print_r($filtros);
         //var_dump($_GET);
         foreach($filtro_keys as $filtro) {
-            if ($filtro == "REF") {if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
-                    $query .= "Referencia like" . $filtros[$filtro];
+            if ($filtro == "REF") {
+                if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
+                    $query .= "Referencia =" . $filtros[$filtro];
                     $query .= " AND ";
                 }
             }
 
             if ($filtro == "RID") {
                 if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
-                    $query .= "FK_ID_Rider=" . $filtros[$filtro];
+                    $query .= "r.nombre=" . $nombre_apellidos[0];
+                    $query .= " AND r.apellidos=". $nombre_apellidos[1];
                     $query .= " AND ";
                 }
 
@@ -154,6 +158,7 @@ function get_pedidos($conexion_bd,$array_pedidos,$filtros){
             }
         }
         $query = substr($query, 0, -4);
+        echo($query);
     }
 /*
     echo("----------------- \n");

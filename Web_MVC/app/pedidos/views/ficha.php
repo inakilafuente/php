@@ -13,9 +13,9 @@
                 $estado = "ENTREGADO";
             }
                 $dir_recog = $pedido[0]["Direccion_recogida"];
-                $date_recog = strtotime($pedido[0]["Hora_recogida"]);
+                $date_recog = $pedido[0]["Hora_recogida"];
                 $dir_entreg = $pedido[0]["Direccion_entrega"];
-                $date_entreg = strtotime($pedido[0]["Hora_entrega"]);
+                $date_entreg = $pedido[0]["Hora_entrega"];
                 $tiempo = $pedido[0]["Tiempo_entrega"];
                 $dist = $pedido[0]["Distancia"];
                 $ref = $pedido[0]["Referencia"];
@@ -31,6 +31,15 @@
         <select name="selectEstado">
                 <option>-</option>
                 <?php
+                if($estado==0){
+                    $estado="PENDIENTE";
+                }
+                if($estado==1){
+                    $estado="RECOGIDO";
+                }
+                if($estado==2) {
+                    $estado = "ENTREGADO";
+                }
                 foreach($res_estados as $row_estado):
                     if($row_estado==$estado):?>
                         <option selected><?php echo($estado); ?></option>
@@ -46,13 +55,12 @@
             <br><label for="fname">Direccion recogida:</label><br>
         <input type="text" id="fname" name="txtDir_recog"  value='<?php echo($dir_recog);?>'><br><br>
         <label for="lname">Hora recogida:</label><br>
-
-        <input type="datetime-local" id="lname" name="date_recog" value=<?php echo date('Y-m-d\TH:i', $date_recog); ?>><br><br>
+        <input type="datetime-local" id="lname" name="date_recog" value=<?php echo strtotime($date_recog); ?>><br><br>
         <label for="fname">Direccion entrega:</label><br>
         <input type="text" id="fname" name="txtDir_entreg"  value='<?php echo($dir_entreg);?>'><br><br>
         <label for="lname">Hora entrega:</label><br>
 
-        <input type="datetime-local" id="lname"  name="date_entreg" value=<?php echo date('Y-m-d\TH:i', $date_entreg); ?>><br><br>
+        <input type="datetime-local" id="lname"  name="date_entreg" value=<?php echo ($date_entreg); ?>><br><br>
         <label for="fname">Tiempo entrega:</label><br>
         <input type="text" id="fname" name="txtTiempo"  value=<?php echo($tiempo); ?> readonly><br><br>
         <label for="lname">Distancia:</label><br>

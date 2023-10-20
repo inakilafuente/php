@@ -8,7 +8,7 @@
             <?php
             $i=0;
             foreach($res_riders as $row_rider): ?>
-                <option><?php echo($row_rider['PK_Id']);?></option>
+                <option><?php echo($row_rider['nombre']. " ". $row_rider['apellidos']);?></option>
             <?php endforeach; ?>
 
 
