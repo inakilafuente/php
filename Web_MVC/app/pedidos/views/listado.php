@@ -129,22 +129,29 @@ if($_REQUEST['page']=="1"){
 }else {
     if ($page > 1) {
         if($_REQUEST['page']>2){
-            echo("<li><a href='listado.php?page=1'><span><<</span></a></li>");
+            echo("<a href='listado.php?page=1'><span> << </span></a>");
         }
         $anterior = $_REQUEST['page'] - 1;
-        echo("<li><a href='listado.php?page=" . ($page - 1) . "'>" . $anterior . "</a></li>");
+        echo("<a href='listado.php?page=" . ($page - 1) . "'>" . "  ".$anterior." " . "</a>");
     }
 }
 
-    echo("<li><a>" . $_REQUEST["page"] . "</a></li>");
+    echo("<a>" . $_REQUEST["page"] . "</a>");
     $siguiente = $_REQUEST['page'] + 1;
     $ultima = $num_reg / $pedidos_pag;
+    /*
     if ($ultima == $_REQUEST['page'] + 1) {
         $ultima = "";
     }
+    */
     if ($page < $pages && $pages > 1) {
-        echo("<li><a href='listado.php?page=" . ($page + 1) . "'>" . $siguiente . "</a></li>");
-        echo("<li><a href='listado.php?page=" . ($ultima) . "'><span>>></span></a></li><br>");
+        echo("<a href='listado.php?page=" . ($page + 1) . "'>" . "  ".$siguiente." " . "</a>");
+        if($_REQUEST['page']>$ultima){
+            $_REQUEST['page']= $ultima;
+        }
+        if($_REQUEST['page']+1<$ultima){
+            echo("<a href='listado.php?page=" . ($ultima) . "'><span> >> </span></a><br>");
+        }
     }
 
 ?>
