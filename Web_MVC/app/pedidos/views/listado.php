@@ -1,6 +1,4 @@
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="GET">
-
-
     <?php
     if($_GET["txReferencia"]||$_GET["selRider"]||$_GET["selEstado"]||$_GET["pedidos_finalizados"]){
         session_start();
@@ -9,12 +7,7 @@
         $_SESSION["selRider"]=htmlentities($_GET['selRider']);
         $_SESSION["selEstado"]=htmlentities($_GET['selEstado']);
         $_SESSION["pedidos_finalizados"]=htmlentities($_GET['pedidos_finalizados']);
-
-        print_r($_SESSION);
     }
-
-
-
     ?>
 
     <div>
@@ -87,7 +80,7 @@
         <input type="submit" value="Buscar">
     </div>
     <div>
-        <?php if(!empty($res_pedidos)): ?>
+        <?php if(!empty($busqueda_pedidos)): ?>
             <table>
                 <thead>
                 <th>Referencia</th>
@@ -99,7 +92,7 @@
                 <th>Estado</th>
                 </thead>
                 <tbody>
-                <?php foreach($res_pedidos as $row_pedido):?>
+                <?php foreach($busqueda_pedidos as $row_pedido):?>
                     <tr>
                         <td><a href="ficha.php?id=<?php echo($row_pedido['Referencia']);?>"><?php echo($row_pedido['Referencia']);?></a></td>
                         <td><?php echo($row_pedido['nombre']." ".$row_pedido['apellidos']); ?></td>
@@ -124,5 +117,38 @@
         <?php endif;?>
     </div>
 </form>
+
+
+<?php
+
+echo("<label>Pedidos totales encontrados($num_reg)</label><br>");
+
+if($_REQUEST['page']=="1"){
+    $_REQUEST['page']=="0";
+    echo("");
+}else {
+    if ($page > 1) {
+        if($_REQUEST['page']>2){
+            echo("<li><a href='listado.php?page=1'><span><<</span></a></li>");
+        }
+        $anterior = $_REQUEST['page'] - 1;
+        echo("<li><a href='listado.php?page=" . ($page - 1) . "'>" . $anterior . "</a></li>");
+    }
+}
+
+    echo("<li><a>" . $_REQUEST["page"] . "</a></li>");
+    $siguiente = $_REQUEST['page'] + 1;
+    $ultima = $num_reg / $pedidos_pag;
+    if ($ultima == $_REQUEST['page'] + 1) {
+        $ultima = "";
+    }
+    if ($page < $pages && $pages > 1) {
+        echo("<li><a href='listado.php?page=" . ($page + 1) . "'>" . $siguiente . "</a></li>");
+        echo("<li><a href='listado.php?page=" . ($ultima) . "'><span>>></span></a></li><br>");
+    }
+
+?>
+
+
 
 <button class="btn btn-success" name="btn_nuevo_pedido" onclick=" window.open('ficha.php?btn_nuevo_pedido=true','_blank')">Nuevo Pedido</button>

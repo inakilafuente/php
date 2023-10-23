@@ -3,7 +3,8 @@
 $array_pedidos=array();
 $array_riders=array();
 
-mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+//mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+error_reporting(E_ERROR | E_PARSE);
 
 $host = "172.17.0.3";
 $port = 3306;
@@ -14,6 +15,28 @@ if(!$conexion_bd){
     echo 'Error conectando a base de datos: ' . mysqli_connect_error();
     exit;
 }
+
+if(empty($_REQUEST["page"])||$_REQUEST["page"]==""||$_REQUEST["page"]<"1"){
+    $_REQUEST["page"]="1";
+}
+$pedidos_encontrados=mysqli_query($conexion_bd,"SELECT * FROM PEDIDO p LEFT JOIN RIDER r ON p.FK_ID_Rider=r.PK_Id");
+$num_reg=@mysqli_num_rows($pedidos_encontrados);
+
+$pedidos_pag="1";
+$page=$_REQUEST["page"];
+
+if(is_numeric(($page))){
+    $inicio=(($page-1)*$pedidos_pag);
+}else {
+    $inicio = 0;
+}
+    $query_busqueda_pedidos_limit="SELECT * FROM PEDIDO LIMIT $inicio,$pedidos_pag";
+    echo($query_busqueda_pedidos_limit);
+    $busqueda_pedidos=mysqli_query($conexion_bd,$query_busqueda_pedidos_limit);
+
+    $pages=ceil(($num_reg/$pedidos_pag));
+    echo($page). PHP_EOL;
+    echo($pages). PHP_EOL;
 
 
 
