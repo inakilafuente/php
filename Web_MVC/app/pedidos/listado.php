@@ -54,6 +54,10 @@ $Estado=null;
     if($Estado!=null || $Estado!="" || $Estado!="-"){
         $filtros["EST"]=$Estado;
     }
+    if(in_array("pedidos_finalizados",$keys_get)){
+        $finalizados=$_GET['pedidos_finalizados'];
+        $filtros["FIN"]=$finalizados;
+    }
 
 
 
@@ -121,24 +125,23 @@ function get_pedidos($conexion_bd,$array_pedidos,$filtros){
     */
     $filtro_keys=array_keys($filtros);
 
-    if($filtros["REF"]!="" && $filtros["REF"]!="-" || $filtros["RID"]!="" && $filtros["RID"]!="-" || $filtros["EST"]!="" && $filtros["EST"]!="-"){
+    if($filtros["REF"]!="" && $filtros["REF"]!="-" || $filtros["RID"]!="" && $filtros["RID"]!="-" || $filtros["EST"]!="" && $filtros["EST"]!="-" || $filtros['FIN']=="on"){
         $query.=" WHERE ";
-        print_r($filtros);
+        //print_r($filtros);
         $nombre_apellidos = explode(" ", $filtros["RID"]);
-        print_r($filtros);
         //var_dump($_GET);
         foreach($filtro_keys as $filtro) {
             if ($filtro == "REF") {
                 if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
-                    $query .= "Referencia =" . $filtros[$filtro];
+                    $query .= "Referencia like '%" . $filtros[$filtro]."%'";
                     $query .= " AND ";
                 }
             }
 
             if ($filtro == "RID") {
                 if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
-                    $query .= "r.nombre=" . $nombre_apellidos[0];
-                    $query .= " AND r.apellidos=". $nombre_apellidos[1];
+                    $query .= "r.nombre='" . $nombre_apellidos[0]."'";
+                    $query .= " AND r.apellidos='". $nombre_apellidos[1]."'";
                     $query .= " AND ";
                 }
 
@@ -156,9 +159,16 @@ function get_pedidos($conexion_bd,$array_pedidos,$filtros){
                     $query .= " AND ";
                 }
             }
+            if ($filtro == "FIN") {
+                if ($filtros[$filtro] == 'on') {
+                    var_dump("HOLA");
+                    $query .= "Estado=" . "2";
+                    $query .= " AND ";
+                }
+            }
         }
         $query = substr($query, 0, -4);
-        echo($query);
+        //echo($query);
     }
 /*
     echo("----------------- \n");

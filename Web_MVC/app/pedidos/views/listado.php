@@ -1,33 +1,89 @@
-<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="get">
+<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="GET">
+
+
+    <?php
+    if($_GET["txReferencia"]||$_GET["selRider"]||$_GET["selEstado"]||$_GET["pedidos_finalizados"]){
+        session_start();
+
+        $_SESSION["txReferencia"]=htmlentities($_GET['txReferencia']);
+        $_SESSION["selRider"]=htmlentities($_GET['selRider']);
+        $_SESSION["selEstado"]=htmlentities($_GET['selEstado']);
+        $_SESSION["pedidos_finalizados"]=htmlentities($_GET['pedidos_finalizados']);
+
+        print_r($_SESSION);
+    }
+
+
+
+    ?>
+
     <div>
-        Referencia: <input type="text" name="txReferencia" value="">
+        <?php if($_SESSION["txReferencia"]!=null):?>
+            Referencia: <input type="text" name="txReferencia" value=<?php echo($_SESSION["txReferencia"]);?>>
+        <?php else:?>
+            Referencia: <input type="text" name="txReferencia" value="">
+        <?php endif;?>
+
+        <?php if($_SESSION["selRider"]!=null):?>
+            Rider:
+            <select name="selRider">
+                <option>-</option>
+                <?php
+                $i=0;
+                foreach($res_riders as $row_rider):
+                    $string=$row_rider['nombre']. " ". $row_rider['apellidos'];
+                    if($string==$_SESSION["selRider"]):?>
+                    <option selected><?php echo($string);?></option>
+                    <?php else:?>
+                        <option><?php echo($string);?></option>
+                <?php endif; ?>
+                <?php endforeach; ?>
+            </select>
+        <?php else:?>
         Rider:
         <select name="selRider">
-
             <option>-</option>
             <?php
             $i=0;
             foreach($res_riders as $row_rider): ?>
                 <option><?php echo($row_rider['nombre']. " ". $row_rider['apellidos']);?></option>
             <?php endforeach; ?>
-
-
         </select>
-        Estado:
-        <select name="selEstado">
+        <?php endif;?>
 
-            <option>-</option>
-            <!--
-            <option value="1">Pendiente</option>
-            <option value="2">Recogido</option>
-            <option value="3">Entregado</option>
-            -->
-            <?php
-            $i=0;
-            foreach($res_estados as $row_estado): ?>
-                <option><?php echo($row_estado);?></option>
-            <?php endforeach; ?>
-        </select>
+
+        <?php if($_SESSION["selEstado"]!=null):?>
+            Estado:
+            <select name="selEstado">
+                <option>-</option>
+                <?php
+                $i=0;
+                foreach($res_estados as $row_estado):
+                if($row_estado==$_SESSION["selEstado"]):?>
+                    <option selected><?php echo($row_estado);?></option>
+                <?php else:?>
+                    <option><?php echo($row_estado);?></option>
+                <?php endif;?>
+                <?php endforeach; ?>
+            </select>
+        <?php else:?>
+            Estado:
+            <select name="selEstado">
+                <option>-</option>
+                <?php
+                $i=0;
+                foreach($res_estados as $row_estado): ?>
+                    <option><?php echo($row_estado);?></option>
+                <?php endforeach; ?>
+            </select>
+
+        <?php endif;?>
+        <?php if($_SESSION["pedidos_finalizados"]!=null):?>
+        <input type="checkbox" id="finalizados" name="pedidos_finalizados" checked/>
+        <?php else:?>
+        <input type="checkbox" id="finalizados" name="pedidos_finalizados" />
+        <?php endif;?>
+        <label for="scales">Pedidos Finalizados</label>
         <input type="submit" value="Buscar">
     </div>
     <div>
