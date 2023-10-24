@@ -78,16 +78,25 @@
         <?php endif;?>
         <label for="scales">Pedidos Finalizados</label>
         <input type="submit" value="Buscar">
+        <button class="btn btn-success" name="btn_nuevo_pedido" onclick=" window.open('ficha.php?btn_nuevo_pedido=true','_blank')">Nuevo Pedido</button>
+
     </div>
     <div>
         <?php if(!empty($busqueda_pedidos)): ?>
             <table>
                 <thead>
+
+
+                <input  type="hidden" name="order_dir" value=<?php echo($filtros['DIR']); ?>>
+                <input  type="hidden" name="order_by" value=<?php echo($filtros['ORDERBY']);?>>
+                <th style="cursor:pointer;" onclick="ordenar('Referencia')"
                 <th>Referencia</th>
+                <th style="cursor:pointer;" onclick="ordenar('nombre')"
                 <th>Rider</th>
                 <th>Fecha creación</th>
                 <th>Dirección de recogida</th>
                 <th>Dirección de entrega</th>
+                <th style="cursor:pointer;" onclick="ordenar('Distancia')"
                 <th>Distancia</th>
                 <th>Estado</th>
                 </thead>
@@ -95,10 +104,28 @@
                 <?php foreach($busqueda_pedidos as $row_pedido):?>
                     <tr>
                         <td><a href="ficha.php?id=<?php echo($row_pedido['Referencia']);?>"><?php echo($row_pedido['Referencia']);?></a></td>
-                        <td><?php echo($row_pedido['nombre']." ".$row_pedido['apellidos']); ?></td>
+                        <?php
+                        $nombre_completo=$row_pedido['nombre']." ".$row_pedido['apellidos'];
+                        if($nombre_completo!=" "):?>
+                        <td><?php echo($nombre_completo); ?></td>
+                        <?php else:?>
+                        <td><?php echo("-"); ?></td>
+                        <?php endif;?>
                         <td><?php echo($row_pedido['Fecha_creacion']); ?></td>
-                        <td><?php echo($row_pedido['Direccion_recogida']); ?></td>
-                        <td><?php echo($row_pedido['Direccion_entrega']); ?></td>
+                        <?php
+                        $direccion_recogida=$row_pedido['Direccion_recogida'];
+                        if($direccion_recogida!=null):?>
+                        <td><?php echo($direccion_recogida); ?></td>
+                        <?php else:?>
+                        <td><?php echo("-"); ?></td>
+                        <?php endif;?>
+                        <?php
+                        $direccion_entrega=$row_pedido['Direccion_entrega'];
+                        if($direccion_entrega!=null):?>
+                            <td><?php echo($direccion_entrega); ?></td>
+                        <?php else:?>
+                            <td><?php echo("-"); ?></td>
+                        <?php endif;?>
                         <td><?php echo($row_pedido['Distancia']); ?></td>
                         <td><?php
                             if ($row_pedido['Estado']==0) {
@@ -158,4 +185,22 @@ if($_REQUEST['page']=="1"){
 
 
 
-<button class="btn btn-success" name="btn_nuevo_pedido" onclick=" window.open('ficha.php?btn_nuevo_pedido=true','_blank')">Nuevo Pedido</button>
+
+
+
+<script>
+    function ordenar(campo){
+        let order = 'asc';
+
+        let current_order_dir = document.getElementsByName('order_dir')[0].value;
+        let current_order_value = document.getElementsByName('order_by')[0].value;
+        if(current_order_value === campo){
+            if(current_order_dir === 'asc'){
+                order = 'desc';
+            }
+        }
+        document.getElementsByName('order_dir')[0].value = order;
+        document.getElementsByName('order_by')[0].value = campo;
+        document.forms[0].submit();
+    }
+</script>

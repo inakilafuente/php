@@ -16,27 +16,6 @@ if(!$conexion_bd){
     exit;
 }
 
-if(empty($_REQUEST["page"])||$_REQUEST["page"]==""||$_REQUEST["page"]<"1"){
-    $_REQUEST["page"]="1";
-}
-$pedidos_encontrados=mysqli_query($conexion_bd,"SELECT * FROM PEDIDO p LEFT JOIN RIDER r ON p.FK_ID_Rider=r.PK_Id");
-$num_reg=@mysqli_num_rows($pedidos_encontrados);
-
-$pedidos_pag="1";
-$page=$_REQUEST["page"];
-
-if(is_numeric(($page))){
-    $inicio=(($page-1)*$pedidos_pag);
-}else {
-    $inicio = 0;
-}
-    $query_busqueda_pedidos_limit="SELECT * FROM PEDIDO LIMIT $inicio,$pedidos_pag";
-    echo($query_busqueda_pedidos_limit);
-    $busqueda_pedidos=mysqli_query($conexion_bd,$query_busqueda_pedidos_limit);
-
-    $pages=ceil(($num_reg/$pedidos_pag));
-    echo($page). PHP_EOL;
-    echo($pages). PHP_EOL;
 
 
 
@@ -53,9 +32,9 @@ $filtros=array();
 $Ref=null;
 $Rider=null;
 $Estado=null;
-//var_dump(($_GET));
+//print_r($_REQUEST);
     $keys_get=array_keys($_GET);
-    //print_r($keys_get);
+    $keys_request=array_keys($_REQUEST);
     if(in_array("txReferencia",$keys_get)){
         $Ref=addslashes($_GET['txReferencia']);
     }
@@ -81,8 +60,34 @@ $Estado=null;
         $finalizados=$_GET['pedidos_finalizados'];
         $filtros["FIN"]=$finalizados;
     }
+    if(in_array("order_dir",$keys_request)){
+        $filtros['DIR']=$_REQUEST['order_dir'];
+    }
+    if(in_array("order_by",$keys_request)){
+        $filtros['ORDERBY']=$_REQUEST['order_by'];
+    }
 
+    if(empty($_REQUEST["page"])||$_REQUEST["page"]==""||$_REQUEST["page"]<"1"){
+        $_REQUEST["page"]="1";
+    }
+    $query_get_pedidos="";
+    //print_r($filtros);
+    $pedidos_encontrados=get_pedidos($conexion_bd,$array_pedidos,$filtros,$query_get_pedidos);
+    //$pedidos_encontrados=mysqli_query($conexion_bd,"SELECT * FROM PEDIDO p LEFT JOIN RIDER r ON p.FK_ID_Rider=r.PK_Id");
+    $num_reg=count($pedidos_encontrados);
 
+    $pedidos_pag="1";
+    $page=$_REQUEST["page"];
+
+    if(is_numeric(($page))){
+        $inicio=(($page-1)*$pedidos_pag);
+    }else {
+        $inicio = 0;
+    }
+    $query_busqueda_pedidos_limit= $query_get_pedidos." LIMIT ". $inicio.",".$pedidos_pag;
+    $busqueda_pedidos=mysqli_query($conexion_bd,$query_busqueda_pedidos_limit);
+
+    $pages=ceil(($num_reg/$pedidos_pag));
 
 
 /*
@@ -97,7 +102,7 @@ $Estado=null;
 }
  */
 //print_r($filtros);
-$res_pedidos=get_pedidos($conexion_bd,$array_pedidos,$filtros);
+                                //$res_pedidos=get_pedidos($conexion_bd,$array_pedidos,$filtros,$query_get_pedidos);
 //print_r($res_pedidos);
 //$res_pedidos = $base_datos->get_pedidos($filtros);
 
@@ -139,67 +144,74 @@ require_once 'views/listado.php';
 
 
 
-function get_pedidos($conexion_bd,$array_pedidos,$filtros){
+function get_pedidos($conexion_bd,$array_pedidos,$filtros,&$query){
     $query="SELECT * FROM PEDIDO p LEFT JOIN RIDER r ON p.FK_ID_Rider=r.PK_Id";
     /*
     echo($filtros['REF']."\n");
     echo($filtros['RID']."\n");
     echo($filtros['EST']."\n");
     */
+    //print_r($filtros);
     $filtro_keys=array_keys($filtros);
-
-    if($filtros["REF"]!="" && $filtros["REF"]!="-" || $filtros["RID"]!="" && $filtros["RID"]!="-" || $filtros["EST"]!="" && $filtros["EST"]!="-" || $filtros['FIN']=="on"){
-        $query.=" WHERE ";
+    $dir="";
+    if($filtros["REF"]!="" && $filtros["REF"]!="-" || $filtros["RID"]!="" && $filtros["RID"]!="-" || $filtros["EST"]!="" && $filtros["EST"]!="-" || $filtros['FIN']=="on") {
+        $query .= " WHERE ";
         //print_r($filtros);
         $nombre_apellidos = explode(" ", $filtros["RID"]);
         //var_dump($_GET);
-        foreach($filtro_keys as $filtro) {
+        foreach ($filtro_keys as $filtro) {
             if ($filtro == "REF") {
                 if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
-                    $query .= "Referencia like '%" . $filtros[$filtro]."%'";
+                    $query .= "Referencia like '%" . $filtros[$filtro] . "%'";
                     $query .= " AND ";
                 }
             }
 
             if ($filtro == "RID") {
                 if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
-                    $query .= "r.nombre='" . $nombre_apellidos[0]."'";
-                    $query .= " AND r.apellidos='". $nombre_apellidos[1]."'";
+                    $query .= "r.nombre='" . $nombre_apellidos[0] . "'";
+                    $query .= " AND r.apellidos='" . $nombre_apellidos[1] . "'";
                     $query .= " AND ";
                 }
 
             }
             if ($filtro == "EST") {
                 if ($filtros[$filtro] != '-' && $filtros[$filtro] != "") {
-                        if ($filtros[$filtro]=="PENDIENTE") {
-                            $filtros["EST"]=0;
-                        }elseif ($filtros[$filtro]=="RECOGIDO") {
-                            $filtros["EST"]=1;
-                        }elseif ($filtros[$filtro]=="ENTREGADO") {
-                            $filtros["EST"]=2;
-                        }
+                    if ($filtros[$filtro] == "PENDIENTE") {
+                        $filtros["EST"] = 0;
+                    } elseif ($filtros[$filtro] == "RECOGIDO") {
+                        $filtros["EST"] = 1;
+                    } elseif ($filtros[$filtro] == "ENTREGADO") {
+                        $filtros["EST"] = 2;
+                    }
                     $query .= "Estado=" . $filtros[$filtro];
                     $query .= " AND ";
                 }
             }
             if ($filtro == "FIN") {
                 if ($filtros[$filtro] == 'on') {
-                    var_dump("HOLA");
                     $query .= "Estado=" . "2";
                     $query .= " AND ";
                 }
             }
         }
         $query = substr($query, 0, -4);
-        //echo($query);
     }
-/*
-    echo("----------------- \n");
-    echo($query);
-    echo("----------------- \n");
-*/
-        #p.Referencia=".$filtros['REF']." AND p.FK_ID_RIDER=".$filtros['RID']." AND p.Estado=".$filtros['EST'];
+    if($filtros['ORDERBY']!=""){
+        foreach($filtro_keys as $filtro){
+            if($filtros["ORDERBY"]!=""){
+                if($filtro=="DIR"){
+                    $dir=$filtros[$filtro];
+                }
+                if($filtro=="ORDERBY"){
+                    $query.=" ORDER BY ". $filtros[$filtro]." ".$dir;
+                }
+            }
 
+        }
+    }
+
+    //echo($query);
     $res_pedidos = mysqli_query($conexion_bd, $query);
     if($res_pedidos === false){
         echo 'Query error: ' . mysqli_error($conexion_bd);
