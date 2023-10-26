@@ -32,7 +32,6 @@ if(empty($dist)){
 $error_ref_existe=false;
 $error_estado=false;
 if(array_key_exists("id", $_POST)){
-
     $id_pedido=$_POST['id_pedido'];
     $ref=addslashes($_POST['id']);
     $estado=$_POST['selectEstado'];
@@ -71,11 +70,13 @@ if(array_key_exists("id", $_POST)){
 
 
 if(array_key_exists("btn_nuevo_pedido", $_GET)){
+
     $nuevo_pedido=True;
     $array_ultimo_pedido=array();
     $id_disponible=get_ultimo_pedido($conexion_bd,$array_ultimo_pedido)['PK_id']+1;
     $date_creacion=date('Y-m-d\TH:i');
-
+    $tiempo="-";
+    $dist="-";
 
 }elseif (array_key_exists('id', $_GET)){
         $array_pedido=array();

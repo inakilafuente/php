@@ -1,10 +1,13 @@
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
     <fieldset>
             <?php
-            print_r($_POST);
-            print_r($pedido);
-            if($pedido!=null){
 
+            print_r($_POST);
+
+            print_r($pedido);
+
+            print_r($_GET);
+            if($pedido!=null){
                 $id_pedido=$pedido[0]["PK_id"];
             if($pedido[0]["Estado"]==0){
                 $estado="PENDIENTE";
@@ -35,6 +38,7 @@
                 $ref = $_POST["id"];
                 $date_crecion = $_POST["date_crecion"];
                 $fk_id_rider = $_POST["fk_idRider"];
+
                 if($tiempo=="readonly"){
                     $tiempo=0;
                 }
@@ -76,7 +80,7 @@
             <br><label for="fname">Direccion recogida:</label><br>
         <input type="text" id="fname" name="txtDir_recog"  value='<?php echo($dir_recog);?>'><br><br>
         <label for="lname">Hora recogida:</label><br>
-        <input type="datetime-local" id="lname" name="date_recog" value=<?php echo strtotime($date_recog); ?>><br><br>
+        <input type="datetime-local" id="lname" name="date_recog" value=<?php echo $date_recog; ?>><br><br>
         <label for="fname">Direccion entrega:</label><br>
         <input type="text" id="fname" name="txtDir_entreg"  value='<?php echo($dir_entreg);?>'><br><br>
         <label for="lname">Hora entrega:</label><br>
@@ -133,9 +137,9 @@
         <label for="lname">Hora entrega:</label><br>
         <input type="datetime-local" id="lname"  name="date_entreg" value=""><br><br>
         <label for="fname">Tiempo entrega:</label><br>
-        <input type="text" id="fname" name="txtTiempo"  value=<?php echo($tiempo)?> readonly><br><br>
+        <input type="text" id="fname" name="txtTiempo"  value="-" readonly><br><br>
         <label for="lname">Distancia:</label><br>
-        <input type="text" id="lname" name="txtDist"  value=<?php echo($dist)?> readonly><br><br>
+        <input type="text" id="lname" name="txtDist"  value="-" readonly><br><br>
         <label for="fname">Referencia:</label><br>
         <input type="text" id="fname" name="id"  value=""><br><br>
         <?php if($error_ref_existe): ?>
