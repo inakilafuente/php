@@ -107,7 +107,7 @@
         <input type="datetime-local" id="lname" name="date_crecion"  value=<?php echo date('Y-m-d\TH:i', $date_creacion); ?> readonly><br><br>
         <label for="lname">ID Rider:</label><br>
         <input type="text" id="lname" name="fk_idRider"  value=<?php echo($fk_id_rider); ?>><br><br>
-        <input type="submit" value="Modificar pedido">
+        <input type="submit" value="Modificar pedido"><input type="button" value="Cancelar" onclick="history.back();">
 
 
 
@@ -148,7 +148,7 @@
         <input type="datetime-local" id="lname" name="date_crecion"  value=<?php echo ($date_creacion); ?> readonly><br><br>
         <label for="lname">ID Rider:</label><br>
         <input type="text" id="lname" name="fk_idRider"  value="" readonly><br><br>
-        <input type="submit" value="Crear pedido">
+        <input type="submit" value="Crear pedido"><input type="button" value="Cancelar" onclick="self.close()">
 
         <?php endif; ?>
     </fieldset>
