@@ -1,0 +1,27 @@
+create table RIDER
+(
+    PK_Id     int auto_increment
+        primary key,
+    nombre    varchar(20) null,
+    apellidos varchar(60) null
+);
+
+create table PEDIDO
+(
+    PK_id              int auto_increment
+        primary key,
+    Estado             int         null,
+    Direccion_recogida varchar(50) null,
+    Hora_recogida      datetime    null,
+    Direccion_entrega  varchar(50) null,
+    Hora_entrega       datetime    null,
+    Tiempo_entrega     int         null,
+    Distancia          int         null,
+    FK_ID_Rider        int         not null,
+    Referencia         int         null,
+    Fecha_creacion     datetime    null,
+    constraint PEDIDO_unique
+        unique (Referencia),
+    constraint Pedido_Rider_id_fk
+        foreign key (FK_ID_Rider) references RIDER (PK_Id)
+);

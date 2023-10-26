@@ -1,12 +1,6 @@
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
     <fieldset>
             <?php
-
-            print_r($_POST);
-
-            print_r($pedido);
-
-            print_r($_GET);
             if($pedido!=null){
                 $id_pedido=$pedido[0]["PK_id"];
             if($pedido[0]["Estado"]==0){
@@ -111,6 +105,12 @@
         <input type="datetime-local" id="lname" name="date_crecion"  value=<?php echo date('Y-m-d\TH:i', $date_creacion); ?> readonly><br><br>
         <label for="lname">ID Rider:</label><br>
         <input type="text" id="lname" name="fk_idRider"  value=<?php echo($fk_id_rider); ?>><br><br>
+        <?php if($error_rider_existe): ?>
+                <label for="lname" style="color: red"><?php echo ($error_rider_existe_msg);?></label><br><br>
+        <?php endif;?>
+        <?php if($error_rider_ocupado): ?>
+            <label for="lname" style="color: red"><?php echo ($error_rider_ocupado_msg);?></label><br><br>
+        <?php endif;?>
         <input type="submit" value="Modificar pedido"><input type="button" value="Cancelar" onclick="history.back();">
 
 

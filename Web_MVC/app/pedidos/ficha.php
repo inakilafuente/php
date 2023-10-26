@@ -37,7 +37,6 @@ if(array_key_exists("id", $_POST)){
     $estado=$_POST['selectEstado'];
     $dir_recog=addslashes($_POST['txtDir_recog']);
     $date_recog = strtotime($_POST["date_recog"]);
-    //echo("------------".$date_recog."\n");
     $dir_entreg=addslashes($_POST['txtDir_entreg']);
     $date_entreg=strtotime($_POST["date_entreg"]);
     $tiempo=$_POST['txtTiempo'];
@@ -151,6 +150,18 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
                 $error_rider_existe_msg="Rider no encontrado en el sistema";
             }
         }
+        var_dump($fk_id_rider);
+        if($fk_id_rider!=""){
+            $pedidos_por_rider=get_pedidos_por_rider($conexion_bd,$array_pedido,$fk_id_rider);
+            $error_rider_ocupado=false;
+            foreach($pedidos_por_rider as $pedido_por_rider){
+                if($pedido_por_rider["Estado"]>0){
+                    $error_rider_ocupado=true;
+                    $error_rider_ocupado_msg="Rider ocupado";
+                }
+            }
+        }
+
         if(!$error_ref_existe){
             $ref=$_POST['id'];
         }
@@ -158,13 +169,14 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
 
         $date_creacion=strtotime($_POST['date_crecion']);
 
-        if($existe_pedido_id){
+        if($existe_pedido_id && $error_rider_existe && !$error_rider_ocupado){
             $error_ref_exist_msg="";
+            $error_rider_existe_msg="";
             $pedido=new Pedido($id_pedido,$ref,$dir_recog,$date_recog,$dir_entreg,$date_entreg,$tiempo,$estado,$dist,$date_creacion,$fk_id_rider);
             actualizar_pedido($conexion_bd,$pedido);
             $pedido=get_pedido($conexion_bd,$array_pedido,$id_pedido);
         }else{
-            if(!$error_estado && !$error_ref_vacia){
+            if(!$error_estado && !$error_ref_vacia && !$error_rider_ocupado){
                 $pedido=new Pedido($id_pedido,$ref,$dir_recog,$date_recog,$dir_entreg,$date_entreg,$tiempo,$estado,$dist,$date_creacion,$fk_id_rider);
                 guardar_pedido($conexion_bd,$pedido);
                 $pedido=get_pedido($conexion_bd,$array_pedido,$id_pedido);
@@ -197,7 +209,18 @@ function get_pedido($conexion_bd,$array_pedido,$id_pedido){
     }
     return $array_pedido;
 }
-
+function get_pedidos_por_rider($conexion_bd,$array_pedido,$id_rider){
+    $query="SELECT * FROM PEDIDO WHERE FK_ID_Rider=".$id_rider;
+    $res_pedido = mysqli_query($conexion_bd, $query);
+    if($res_pedido === false){
+        echo 'Query error: ' . mysqli_error($conexion_bd);
+        exit;
+    }
+    while($row_pedido = $res_pedido->fetch_assoc()){
+        $array_pedido[]=$row_pedido;
+    }
+    return $array_pedido;
+}
 function get_pedido_por_id($conexion_bd,$array_pedido,$id_pedido){
     $query="SELECT * FROM PEDIDO WHERE PK_id=".$id_pedido;
     $res_pedido = mysqli_query($conexion_bd, $query);
@@ -287,7 +310,7 @@ function guardar_pedido($conexion_bd,$pedido){
 
         $query = "INSERT INTO PEDIDO (PK_id,Estado,Direccion_recogida,Hora_recogida,Direccion_entrega,Hora_entrega,Tiempo_entrega,Distancia,FK_ID_Rider,Referencia,Fecha_creacion)
           VALUES ('$id_pedido_insert','$estado_pedido_insert','$dir_recogida_insert','$hora_recogida', '$dir_entrega_insert','$hora_entrega','$tiempo_insert','$distancia','$id_rider_insert','$referencia_insert','$date_creacion_insert')";
-        echo($query);
+        //echo($query);
         $res_insert = mysqli_query($conexion_bd, $query);
         if ($res_insert === false) {
             echo 'Query error: ' . mysqli_error($conexion_bd);
@@ -298,7 +321,7 @@ function guardar_pedido($conexion_bd,$pedido){
             echo 'Error obteniendo PK del pedido insertado';
             exit;
         }
-        echo 'Pedido insertado con PK ' . $pk_id_pedido . PHP_EOL;
+        //echo 'Pedido insertado con PK ' . $pk_id_pedido . PHP_EOL;
         $query_activar_cheks = "SET FOREIGN_KEY_CHECKS=1";
         mysqli_query($conexion_bd, $query_activar_cheks);
 
