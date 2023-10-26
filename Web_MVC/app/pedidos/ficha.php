@@ -1,6 +1,7 @@
 <?php
 // Este controlador se encarga de mostrar la vista de una ficha de un Pedido
 require_once '../../lib/Pedido.php';
+error_reporting(E_ERROR | E_PARSE);
 $host = "172.17.0.3";
 $port = 3306;
 $user = "root";
@@ -52,6 +53,10 @@ if(array_key_exists("id", $_POST)){
             $error_ref_exist_msg="Referencia en uso";
         }
     }
+    if($ref==""){
+        $error_ref_vacia=true;
+        $error_ref_vacia_msg="Referencia vacia";
+    }
     if($estado!="PENDIENTE" && $estado!="RECOGIDO" && $estado!="ENTREGADO"){
         $error_estado=true;
         $error_estado_msg="El estado no es correcto";
@@ -76,7 +81,6 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
         $array_pedido=array();
         $pedidos=array();
         $id_pedido = addslashes($_GET['id']);
-
             $pedidos=get_pedidos($conexion_bd,$pedidos);
             $existe=false;
             foreach($pedidos as $ped){
@@ -97,12 +101,16 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
         $array_pedido=array();
         $array_pedidos_disponibles=get_pedidos($conexion_bd,$array_pedidos_disponibles);
         $error_ref_existe=false;
-        foreach($array_pedidos_disponibles as $pedido){
-            if($pedido['Referencia']==$ref){
+        foreach($array_pedidos_disponibles as $pedido_buscar){
+            if($pedido_buscar['Referencia']==$ref){
                 $error_ref_existe=true;
                 $error_ref_exist_msg="Referencia en uso";
                 //echo($ref_exist_msg);
             }
+        }
+        if($pedido['Referencia']==" "){
+            $error_ref_vacia=true;
+            $error_ref_vacia_msg="Referencia vacia";
         }
         if(!$error_ref_existe){
             $ref=addslashes($_POST['id']);
@@ -148,13 +156,18 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
 
 
         $date_creacion=strtotime($_POST['date_crecion']);
-        $pedido=new Pedido($id_pedido,$ref,$dir_recog,$date_recog,$dir_entreg,$date_entreg,$tiempo,$estado,$dist,$date_creacion,$fk_id_rider);
+
         if($existe_pedido_id){
+            $error_ref_exist_msg="";
+            $pedido=new Pedido($id_pedido,$ref,$dir_recog,$date_recog,$dir_entreg,$date_entreg,$tiempo,$estado,$dist,$date_creacion,$fk_id_rider);
             actualizar_pedido($conexion_bd,$pedido);
             $pedido=get_pedido($conexion_bd,$array_pedido,$id_pedido);
         }else{
-            guardar_pedido($conexion_bd,$pedido);
-            $pedido=get_pedido($conexion_bd,$array_pedido,$id_pedido);
+            if(!$error_estado && !$error_ref_vacia){
+                $pedido=new Pedido($id_pedido,$ref,$dir_recog,$date_recog,$dir_entreg,$date_entreg,$tiempo,$estado,$dist,$date_creacion,$fk_id_rider);
+                guardar_pedido($conexion_bd,$pedido);
+                $pedido=get_pedido($conexion_bd,$array_pedido,$id_pedido);
+            }
         }
 
     }
