@@ -126,7 +126,7 @@
                         <?php else:?>
                             <td><?php echo("-"); ?></td>
                         <?php endif;?>
-                        <td><?php echo($row_pedido['Distancia']); ?></td>
+                        <td class="distancia_pedido"><?php echo($row_pedido['Distancia']); ?></td>
                         <td><?php
                             if ($row_pedido['Estado']==0) {
                                 echo('PENDIENTE');
@@ -203,4 +203,25 @@ if($_REQUEST['page']=="1"){
         document.getElementsByName('order_by')[0].value = campo;
         document.forms[0].submit();
     }
+
+
+    function calcular_distancia(){
+        let distancias=document.getElementsByClassName("distancia_pedido");
+        if(distancias[0].value===0){
+
+        }
+        let dir_recog= document.getElementsByName("txtDir_recog");
+        let dir_entreg=document.getElementsByName("txtDir_entreg");
+        if(dir_recog[0].value!=="" && dir_entreg[0].value!==""){
+            if(confirm("¿Estas seguro de que quieres calcular la distancia?")) {
+                let submit=document.getElementById("myForm")
+                submit.submit();
+            }
+        }else if(dir_recog[0].value===""){
+            alert("La direccion de recogida no esta indicada");
+        }else if(dir_entreg[0].value===""){
+            alert("La direccion de entrega no esta indicada");
+        }
+    }
 </script>
+

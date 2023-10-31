@@ -26,11 +26,16 @@ $existe_pedido_id=false;
 if(empty($tiempo)){
     $tiempo="-";
 }
+/*
 if(empty($dist)){
     $dist="-";
 }
+*/
 $error_ref_existe=false;
 $error_estado=false;
+
+$puede_recoger=false;
+$puede_entregar=false;
 if(array_key_exists("id", $_POST)){
     $id_pedido=$_POST['id_pedido'];
     $ref=addslashes($_POST['id']);
@@ -40,7 +45,15 @@ if(array_key_exists("id", $_POST)){
     $dir_entreg=addslashes($_POST['txtDir_entreg']);
     $date_entreg=strtotime($_POST["date_entreg"]);
     $tiempo=$_POST['txtTiempo'];
-    $dist=$_POST['txtDist'];
+    //$dist=$_POST['txtDist'];
+    //echo($dir_recog."##");
+    //echo($dir_entreg."##");
+    if($dir_recog!="" && $dir_entreg!=""){
+        latitud_longitud($latitud_recog,$longitud_recog,$dir_recog);
+        latitud_longitud($latitud_entreg,$longitud_entreg,$dir_entreg);
+        $dist = getDistanceBetweenPointsNew($latitud_recog, $longitud_recog, $latitud_entreg, $longitud_entreg, $unit = 'miles');
+        //echo($dist);
+    }
     $date_creacion=strtotime($_POST["date_crecion"]);
     $fk_id_rider=addslashes($_POST['fk_idRider']);
     $array_pedidos_disponibles=get_pedidos($conexion_bd,$array_pedidos_disponibles);
@@ -75,7 +88,7 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
     $id_disponible=get_ultimo_pedido($conexion_bd,$array_ultimo_pedido)['PK_id']+1;
     $date_creacion=date('Y-m-d\TH:i');
     $tiempo="-";
-    $dist="-";
+    //$dist="-";
 
 }elseif (array_key_exists('id', $_GET)){
         $array_pedido=array();
@@ -89,12 +102,41 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
                 }
             }
             $pedido=get_pedido($conexion_bd,$array_pedido,$id_pedido);
+            //var_dump($pedido);
             if(empty($id_pedido) || !$existe){
                 echo 'Pedido no encontrado';
                 http_response_code(404);
                 return;
             }
-        $date_creacion=strtotime($pedido[0]['Fecha_creacion']);
+            $date_creacion=strtotime($pedido[0]['Fecha_creacion']);
+            if($fk_id_rider!=""){
+                $pedidos_por_rider=get_pedidos_por_rider($conexion_bd,$array_pedido,$fk_id_rider);
+                $error_rider_ocupado=false;
+                foreach($pedidos_por_rider as $pedido_por_rider){
+                    if($pedido_por_rider["Estado"]>0){
+                        $error_rider_ocupado=true;
+                        $error_rider_ocupado_msg="Rider ocupado";
+                    }
+                }
+            }
+
+            $dir_recog=$pedido[0]["Direccion_recogida"];
+            $dir_entreg=$pedido[0]["Direccion_entrega"];
+            if($dir_recog!="" && $dir_entreg!=""){
+                latitud_longitud($latitud_recog,$longitud_recog,$dir_recog);
+                latitud_longitud($latitud_entreg,$longitud_entreg,$dir_entreg);
+                $dist = getDistanceBetweenPointsNew($latitud_recog, $longitud_recog, $latitud_entreg, $longitud_entreg, $unit = 'miles');
+                //echo($dist);
+            }
+            $estado=$pedido[0]["Estado"];
+                //echo(!$error_rider_ocupado. " - ".$dir_recog." - ".$estado. "\n");
+                if(!$error_rider_ocupado && $dir_recog!=" " && $estado=="0"){
+                    $puede_recoger=true;
+                }
+                if(!$error_rider_ocupado && $dir_entreg!=" " && $estado=="1"){
+                    $puede_entregar=true;
+                }
+
     }  else{
     if(array_key_exists('id', $_POST)) {
         $ref=addslashes($_POST['id']);
@@ -140,24 +182,31 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
         }else{
             $tiempo=0;
         }
-        $dist=$_POST['txtDist'];
+
+        //$dist=$_POST['txtDist'];
+
         $fk_id_rider=$_POST['fk_idRider'];
         $array_riders_disponibles=get_riders($conexion_bd,$array_riders_disponibles);
-        $error_rider_existe=true;
+        $error_rider_existe=false;
         foreach($array_riders_disponibles as $rider){
-            if($rider['PK_Id']!=$fk_id_rider){
-                $error_rider_existe=false;
+            if($rider['PK_Id']==$fk_id_rider){
+
+                $error_rider_existe=true;
                 $error_rider_existe_msg="Rider no encontrado en el sistema";
             }
         }
-        var_dump($fk_id_rider);
+
         if($fk_id_rider!=""){
             $pedidos_por_rider=get_pedidos_por_rider($conexion_bd,$array_pedido,$fk_id_rider);
             $error_rider_ocupado=false;
+            $cont=0;
             foreach($pedidos_por_rider as $pedido_por_rider){
                 if($pedido_por_rider["Estado"]>0){
-                    $error_rider_ocupado=true;
-                    $error_rider_ocupado_msg="Rider ocupado";
+                    if($cont>1){
+                        $error_rider_ocupado=true;
+                        $error_rider_ocupado_msg="Rider ocupado";
+                    }
+                    $cont+=1;
                 }
             }
         }
@@ -369,19 +418,6 @@ function actualizar_pedido($conexion_bd,$pedido){
     $referencia_insert = $pedido->get_Referencia();
     $date_creacion_insert = $pedido->get_Fecha_creacion();
 
-    /*
-    echo("ID_PEDIDO:").var_dump($id_pedido_insert).PHP_EOL;
-    echo("ESTADO_PEDIDO:").var_dump($estado_pedido_insert).PHP_EOL;
-    echo("DIR_RECOG:").var_dump($dir_recogida_insert).PHP_EOL;
-    echo("HORA_RECOG:").var_dump($hora_recogida).PHP_EOL;
-    echo("DIR_ENTREG:").var_dump($dir_entrega_insert).PHP_EOL;
-    echo("HORA_ENTREG:").var_dump($hora_entrega).PHP_EOL;
-    echo("TIEMPO:").var_dump($tiempo_insert).PHP_EOL;
-    echo("DISTANCIA:").var_dump($distancia).PHP_EOL;
-    echo("ID_RIDER:").var_dump($id_rider_insert).PHP_EOL;
-    echo("REFERENCIA:").var_dump($referencia_insert).PHP_EOL;
-    echo("FECHA_CREACION:").var_dump($date_creacion_insert).PHP_EOL;
-*/
     if($estado_pedido_insert=="PENDIENTE"){
         $estado_pedido_insert=0;
     }

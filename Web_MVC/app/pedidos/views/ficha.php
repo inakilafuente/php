@@ -1,4 +1,4 @@
-<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+<form id="myForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
     <fieldset>
             <?php
             if($pedido!=null){
@@ -28,7 +28,7 @@
                 $dir_entreg = $_POST["txtDir_entreg"];
                 $date_entreg = $_POST["date_entreg"];
                 $tiempo = $_POST["txtTiempo"];
-                $dist = $_POST["txtDist"];
+                //$dist = $_POST["txtDist"];
                 $ref = $_POST["id"];
                 $date_crecion = $_POST["date_crecion"];
                 $fk_id_rider = $_POST["fk_idRider"];
@@ -68,6 +68,11 @@
                 endif;
                 endforeach;?>
             </select><br>
+        <?php if($puede_recoger):?>
+            <input type="button" value="Recoger Pedido" onclick="cambiar_estado_pedido()"><br>
+        <?php elseif($puede_entregar): ?>
+            <input type="button" value="Entregar Pedido" onclick="cambiar_estado_pedido()"><br>
+        <?php endif;?>
             <?php if($error_estado): ?>
                 <label for="lname" style="color: red"><?php echo ($error_estado_msg);?></label><br>
             <?php endif;?>
@@ -88,11 +93,11 @@
         <?endif;?>
 
         <label for="lname">Distancia:</label><br>
-        <?php if($dist==0): ?>
-        <input type="text" id="lname" name="txtDist"  value="-" readonly><br><br>
-        <?else: ?>
+
         <input type="text" id="lname" name="txtDist"  value=<?php echo($dist); ?> readonly><br><br>
-        <?endif;?>
+        <?php if($dist==0): ?>
+        <input type="button" value="Calcular Distancia" onclick="calcular_distancia()"><br><br>
+        <?php endif; ?>
         <label for="fname">Referencia:</label><br>
         <input type="text" id="fname" name="id"  value=<?php echo($ref); ?>><br>
             <?php if($error_ref_existe && $error_ref_exist_msg!=""): ?>
@@ -105,7 +110,7 @@
         <input type="datetime-local" id="lname" name="date_crecion"  value=<?php echo date('Y-m-d\TH:i', $date_creacion); ?> readonly><br><br>
         <label for="lname">ID Rider:</label><br>
         <input type="text" id="lname" name="fk_idRider"  value=<?php echo($fk_id_rider); ?>><br><br>
-        <?php if($error_rider_existe): ?>
+        <?php if(!$error_rider_existe): ?>
                 <label for="lname" style="color: red"><?php echo ($error_rider_existe_msg);?></label><br><br>
         <?php endif;?>
         <?php if($error_rider_ocupado): ?>
@@ -157,3 +162,38 @@
         <?php endif; ?>
     </fieldset>
 </form>
+
+
+<script type="text/javascript">
+    function cambiar_estado_pedido(){
+        var estado_pedido = document.getElementsByName('selectEstado')
+        if(estado_pedido[0].value==="RECOGIDO"){
+            if(confirm("¿Estas seguro de que quieres entregar el pedido?")){
+                estado_pedido[0].value="ENTREGADO";
+            }
+
+        }
+        if(estado_pedido[0].value==="PENDIENTE"){
+            if(confirm("¿Estas seguro de que quieres recoger el pedido?")) {
+                estado_pedido[0].value = "RECOGIDO";
+            }
+        }
+        let submit=document.getElementById("myForm")
+        submit.submit();
+    }
+
+    function calcular_distancia(){
+        let dir_recog= document.getElementsByName("txtDir_recog");
+        let dir_entreg=document.getElementsByName("txtDir_entreg");
+        if(dir_recog[0].value!=="" && dir_entreg[0].value!==""){
+            if(confirm("¿Estas seguro de que quieres calcular la distancia?")) {
+                let submit=document.getElementById("myForm")
+                submit.submit();
+            }
+        }else if(dir_recog[0].value===""){
+            alert("La direccion de recogida no esta indicada");
+        }else if(dir_entreg[0].value===""){
+            alert("La direccion de entrega no esta indicada");
+        }
+    }
+</script>
