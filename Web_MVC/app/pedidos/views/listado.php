@@ -115,19 +115,26 @@
                         <?php
                         $direccion_recogida=$row_pedido['Direccion_recogida'];
                         if($direccion_recogida!=null):?>
-                        <td><?php echo($direccion_recogida); ?></td>
+                        <td id="txtDir_recog"><?php echo($direccion_recogida); ?></td>
                         <?php else:?>
                         <td><?php echo("-"); ?></td>
                         <?php endif;?>
                         <?php
                         $direccion_entrega=$row_pedido['Direccion_entrega'];
                         if($direccion_entrega!=null):?>
-                            <td><?php echo($direccion_entrega); ?></td>
+                            <td id="txtDir_entreg"><?php echo($direccion_entrega); ?></td>
                         <?php else:?>
                             <td><?php echo("-"); ?></td>
                         <?php endif;?>
-                        <td class="distancia_pedido"><?php echo($row_pedido['Distancia']); ?></td>
-                        <td><?php
+                        <?php if($row_pedido['Distancia']!=0): ?>
+                        <td><?php echo($row_pedido['Distancia']); ?></td>
+                        <?php else: ?>
+
+                        <td><img class="actualizar_dist" src="../../../images/actualizar.png" alt="Actualizar distancia" width="20" height="20" onclick="calcular_distancia()"></td>
+
+                        <?endif;?>
+                        <td>
+                            <?php
                             if ($row_pedido['Estado']==0) {
                                 echo('PENDIENTE');
                             }elseif ($row_pedido['Estado']==1) {
@@ -203,25 +210,88 @@ if($_REQUEST['page']=="1"){
         document.getElementsByName('order_by')[0].value = campo;
         document.forms[0].submit();
     }
-
+</script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
 
     function calcular_distancia(){
-        let distancias=document.getElementsByClassName("distancia_pedido");
-        if(distancias[0].value===0){
+        let distancias=document.getElementsByClassName("actualizar_dist");
+        let parent=distancias[0].parentElement;
+        let dir_recog= document.getElementById("txtDir_recog");
 
-        }
-        let dir_recog= document.getElementsByName("txtDir_recog");
-        let dir_entreg=document.getElementsByName("txtDir_entreg");
-        if(dir_recog[0].value!=="" && dir_entreg[0].value!==""){
+        let valor_fila=document.createElement("td");
+
+
+        let dir_entreg=document.getElementById("txtDir_entreg");
+        alert(dir_recog.innerHTML);
+        alert(dir_entreg.innerHTML);
+        if(dir_recog.innerHTML!=="" && dir_entreg.innerHTML!==""){
             if(confirm("¿Estas seguro de que quieres calcular la distancia?")) {
-                let submit=document.getElementById("myForm")
-                submit.submit();
+                /*
+                let array_recog=dir_recog.innerHTML.split("");
+                let recogida_geo = array_recog[0];
+                for (let i = 1; i < array_recog.length; i++) {
+                    recogida_geo += "%20" + array_recog[i];
+                }
+
+                let array_entrega=dir_entreg.innerHTML.split("");
+                let entrega_geo = array_entrega[0];
+                for (let i = 1; i < array_entrega.length; i++) {
+                    entrega_geo += "%20" + array_entrega[i];
+                }
+                */
+                let latitud_recogida;
+                let longitud_recogida;
+                let latitud_entrega;
+                let longitud_entrega;
+                $.get("http://api.positionstack.com/v1/forward?access_key=521c5d20deb4b33ed5b197c77b3d1ebe&query=" + dir_recog.innerHTML)
+                    .done(function(data){
+                        data.forEach(element => {
+                            latitud_recogida = element.value['0']['latitude'];
+                            longitud_recogida = element.value['0']['longitude'];
+                        });
+                    })
+                    .fail(function(xhr, status, error){
+                        alert("Error durante la ejecución de la Api");
+                    })
+
+                $.get("http://api.positionstack.com/v1/forward?access_key=521c5d20deb4b33ed5b197c77b3d1ebe&query=" + dir_entreg.innerHTML)
+            .done(function(data){
+                    data.forEach(element => {
+                        latitud_entrega = element.value['0']['latitude'];
+                        longitud_entrega = element.value['0']['longitude'];
+                    });
+                })
+                    .fail(function(xhr, status, error){
+                        alert("Error durante la ejecución de la Api");
+                    })
+
+
+                let R = 6371; // Radius of the earth in km
+                let dLat = deg2rad(latitud_entrega-latitud_recogida);  // deg2rad below
+                let dLon = deg2rad(longitud_entrega-longitud_recogida);
+                let a =
+                    Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(deg2rad(latitud_recogida)) * Math.cos(deg2rad(latitud_entrega)) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2)
+                ;
+                let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                let d = R * c;
+                let result=Math.round(d);
+                valor_fila.innerHTML=result;
+                distancias[0].remove();
+                parent.appendChild(valor_fila);
             }
         }else if(dir_recog[0].value===""){
             alert("La direccion de recogida no esta indicada");
         }else if(dir_entreg[0].value===""){
             alert("La direccion de entrega no esta indicada");
         }
+    }
+
+
+    function deg2rad(deg) {
+        return deg * (Math.PI/180)
     }
 </script>
 
