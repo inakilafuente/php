@@ -1,3 +1,5 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <form id="myForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
     <fieldset>
             <?php
@@ -43,11 +45,11 @@
             ?>
         <?php if(!$nuevo_pedido): ?>
         <legend>Ficha articulo:</legend>
-        <label for="fname">ID:</label><br>
+        <label for="fname" class="form-label">ID:</label><br>
 
-        <input type="text" id="fname" name="id_pedido" value=<?php echo($id_pedido)?> readonly><br><br>
+        <input type="text" id="fname" name="id_pedido" class="form-control" value=<?php echo($id_pedido)?> readonly><br><br>
             Estado:<br>
-        <select name="selectEstado">
+        <select class="form-select form-select-sm" name="selectEstado">
                 <option>-</option>
                 <?php
                 if($estado==0){
@@ -69,37 +71,37 @@
                 endforeach;?>
             </select><br>
         <?php if($puede_recoger):?>
-            <input type="button" value="Recoger Pedido" onclick="cambiar_estado_pedido()"><br>
+            <input type="button" class="form-control" value="Recoger Pedido" onclick="cambiar_estado_pedido()"><br>
         <?php elseif($puede_entregar): ?>
-            <input type="button" value="Entregar Pedido" onclick="cambiar_estado_pedido()"><br>
+            <input type="button" class="form-control" value="Entregar Pedido" onclick="cambiar_estado_pedido()"><br>
         <?php endif;?>
             <?php if($error_estado): ?>
-                <label for="lname" style="color: red"><?php echo ($error_estado_msg);?></label><br>
+                <label for="lname" class="form-label" style="color: red"><?php echo ($error_estado_msg);?></label><br>
             <?php endif;?>
-            <br><label for="fname">Direccion recogida:</label><br>
-        <input type="text" id="fname" name="txtDir_recog"  value='<?php echo($dir_recog);?>'><br><br>
-        <label for="lname">Hora recogida:</label><br>
-        <input type="datetime-local" id="lname" name="date_recog" value=<?php echo $date_recog; ?>><br><br>
-        <label for="fname">Direccion entrega:</label><br>
-        <input type="text" id="fname" name="txtDir_entreg"  value='<?php echo($dir_entreg);?>'><br><br>
+            <br><label for="fname" class="form-label">Direccion recogida:</label><br>
+        <input type="text" id="fname" name="txtDir_recog" class="form-control"  value='<?php echo($dir_recog);?>'><br><br>
+        <label for="lname" class="form-label">Hora recogida:</label><br>
+        <input type="datetime-local" id="lname" name="date_recog"  class="form-control" value=<?php echo $date_recog; ?>><br><br>
+        <label for="fname" class="form-label">Direccion entrega:</label><br>
+        <input type="text" id="fname" name="txtDir_entreg" class="form-control"  value='<?php echo($dir_entreg);?>'><br><br>
         <label for="lname">Hora entrega:</label><br>
 
-        <input type="datetime-local" id="lname"  name="date_entreg" value=<?php echo ($date_entreg); ?>><br><br>
-        <label for="fname">Tiempo entrega:</label><br>
+        <input type="datetime-local" id="lname"  name="date_entreg" class="form-control" value=<?php echo ($date_entreg); ?>><br><br>
+        <label for="fname" class="form-label">Tiempo entrega:</label><br>
         <?php if($tiempo==0): ?>
-                <input type="text" id="fname" name="txtTiempo"  value="-" readonly><br><br>
+                <input type="text" id="fname" name="txtTiempo"  class="form-control" value="-" readonly><br><br>
         <?else: ?>
-                <input type="text" id="fname" name="txtTiempo"  value=<?php echo($tiempo); ?> readonly><br><br>
+                <input type="text" id="fname" name="txtTiempo"  class="form-control" value=<?php echo($tiempo); ?> readonly><br><br>
         <?endif;?>
 
         <label for="lname">Distancia:</label><br>
 
-        <input type="text" id="lname" name="txtDist"  value=<?php echo($dist); ?> readonly><br><br>
+        <input type="text" id="lname" name="txtDist"  class="form-control" value=<?php echo($dist); ?> readonly><br><br>
         <?php if($dist==0): ?>
         <input type="button" value="Calcular Distancia" onclick="calcular_distancia()"><br><br>
         <?php endif; ?>
         <label for="fname">Referencia:</label><br>
-        <input type="text" id="fname" name="id"  value=<?php echo($ref); ?>><br>
+        <input type="text" id="fname" name="id" class="form-control" value=<?php echo($ref); ?>><br>
             <?php if($error_ref_existe && $error_ref_exist_msg!=""): ?>
                 <label for="lname" style="color: red"><?php echo ($error_ref_exist_msg);?></label><br><br>
             <?php endif;?>
@@ -107,16 +109,50 @@
                 <label for="lname" style="color: red"><?php echo ($error_ref_vacia_msg);?></label><br><br>
             <?php endif;?>
             <br><label for="lname">Fecha creacion:</label><br>
-        <input type="datetime-local" id="lname" name="date_crecion"  value=<?php echo date('Y-m-d\TH:i', $date_creacion); ?> readonly><br><br>
+        <input type="datetime-local" id="lname" name="date_crecion"  class="form-control" value=<?php echo date('Y-m-d\TH:i', $date_creacion); ?> readonly><br><br>
         <label for="lname">ID Rider:</label><br>
-        <input type="text" id="lname" name="fk_idRider"  value=<?php echo($fk_id_rider); ?>><br><br>
+        <input type="text" id="lname" name="fk_idRider"  class="form-control" value=<?php echo($fk_id_rider); ?>><br><br>
         <?php if(!$error_rider_existe): ?>
                 <label for="lname" style="color: red"><?php echo ($error_rider_existe_msg);?></label><br><br>
         <?php endif;?>
         <?php if($error_rider_ocupado): ?>
             <label for="lname" style="color: red"><?php echo ($error_rider_ocupado_msg);?></label><br><br>
         <?php endif;?>
-        <input type="submit" value="Modificar pedido"><input type="button" value="Cancelar" onclick="history.back();">
+        <input type="submit" class="btn btn-primary" value="Modificar pedido">
+            <input type="button"  class="btn btn-danger" value="Cancelar" onclick="history.back();">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Asignar Rider
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Asignar Rider</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <select name="select_RIDER_MODAL">
+                                <?php
+
+                                foreach($array_riders_disponibles as $row_rider): ?>
+                                    <option><?php echo($row_rider['nombre']." ". $row_rider['apellidos']);?></option>
+                                <?php endforeach; ?>
+                            </select><br><br>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <input type="submit" class="btn btn-primary" value="Asignar">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
 
 
 
@@ -157,7 +193,7 @@
         <input type="datetime-local" id="lname" name="date_crecion"  value=<?php echo ($date_creacion); ?> readonly><br><br>
         <label for="lname">ID Rider:</label><br>
         <input type="text" id="lname" name="fk_idRider"  value="" readonly><br><br>
-        <input type="submit" value="Crear pedido"><input type="button" value="Cancelar" onclick="self.close()">
+        <input type="submit" class="btn btn-primary" value="Crear pedido"><input type="button" value="Cancelar" onclick="self.close()">
 
         <?php endif; ?>
     </fieldset>

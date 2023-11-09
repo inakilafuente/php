@@ -17,6 +17,8 @@ $res_estados[0]="PENDIENTE";
 $res_estados[1]="RECOGIDO";
 $res_estados[2]="ENTREGADO";
 
+
+
 $array_pedido=array();
 $array_pedidos_disponibles=array();
 $array_riders_disponibles=array();
@@ -136,6 +138,7 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
                 if(!$error_rider_ocupado && $dir_entreg!=" " && $estado=="1"){
                     $puede_entregar=true;
                 }
+    $array_riders_disponibles=get_riders_disponibles($conexion_bd,$array_riders_disponibles);
 
     }  else{
     if(array_key_exists('id', $_POST)) {
@@ -214,7 +217,16 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
         if(!$error_ref_existe){
             $ref=$_POST['id'];
         }
+        if($_POST['select_RIDER_MODAL']!=null){
+            $nombre_apellidos= explode(" ",$_POST['select_RIDER_MODAL']);
 
+
+            $nombre=$nombre_apellidos[0];
+            $apellido=$nombre_apellidos[1];
+            $array_riders_new=array();
+            $ID_RIDER_NOMBRE_APELLIDOS=get_ID_riders_nombre_apellido($conexion_bd,$nombre,$apellido,$array_riders_new);
+            $fk_id_rider=$ID_RIDER_NOMBRE_APELLIDOS[0]['PK_Id'];
+        }
 
         $date_creacion=strtotime($_POST['date_crecion']);
 
@@ -299,6 +311,29 @@ function get_ultimo_pedido($conexion_bd,$array_pedido){
 
 function get_riders($conexion_bd,$array_riders){
     $res_riders = mysqli_query($conexion_bd, "SELECT * FROM RIDER");
+    if($res_riders === false){
+        echo 'Query error: ' . mysqli_error($conexion_bd);
+        exit;
+    }
+    while($row_rider = $res_riders->fetch_assoc()){
+        $array_riders[]=$row_rider;
+    }
+    return $array_riders;
+}
+function get_ID_riders_nombre_apellido($conexion_bd,$nombre,$apellido,$array_riders){
+    $query="SELECT PK_Id FROM RIDER WHERE nombre =\"". $nombre."\" AND apellidos=\"".$apellido."\"";
+    $res_riders = mysqli_query($conexion_bd, $query);
+    if($res_riders === false){
+        echo 'Query error: ' . mysqli_error($conexion_bd);
+        exit;
+    }
+    while($row_rider = $res_riders->fetch_assoc()){
+        $array_riders[]=$row_rider;
+    }
+    return $array_riders;
+}
+function get_riders_disponibles($conexion_bd,$array_riders){
+    $res_riders = mysqli_query($conexion_bd, "SELECT * FROM RIDER LEFT JOIN PEDIDO ON PEDIDO.FK_ID_Rider=RIDER.PK_Id WHERE PEDIDO.PK_id is null");
     if($res_riders === false){
         echo 'Query error: ' . mysqli_error($conexion_bd);
         exit;

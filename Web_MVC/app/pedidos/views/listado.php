@@ -1,4 +1,5 @@
-<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="GET">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script><form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="GET">
     <?php
     if($_GET["txReferencia"]||$_GET["selRider"]||$_GET["selEstado"]||$_GET["pedidos_finalizados"]){
         session_start();
@@ -12,14 +13,14 @@
 
     <div>
         <?php if($_SESSION["txReferencia"]!=null):?>
-            Referencia: <input type="text" name="txReferencia" value=<?php echo($_SESSION["txReferencia"]);?>>
+            Referencia: <input type="text" name="txReferencia" value=<?php echo($_SESSION["txReferencia"]);?>><br>
         <?php else:?>
-            Referencia: <input type="text" name="txReferencia" value="">
+            Referencia: <input type="text" name="txReferencia" value=""><br>
         <?php endif;?>
 
         <?php if($_SESSION["selRider"]!=null):?>
             Rider:
-            <select name="selRider">
+            <select class="form-select form-select-sm" name="selRider">
                 <option>-</option>
                 <?php
                 $i=0;
@@ -34,7 +35,7 @@
             </select>
         <?php else:?>
         Rider:
-        <select name="selRider">
+        <select class="form-select form-select-sm" name="selRider">
             <option>-</option>
             <?php
             $i=0;
@@ -47,7 +48,7 @@
 
         <?php if($_SESSION["selEstado"]!=null):?>
             Estado:
-            <select name="selEstado">
+            <select class="form-select form-select-sm" name="selEstado">
                 <option>-</option>
                 <?php
                 $i=0;
@@ -61,7 +62,7 @@
             </select>
         <?php else:?>
             Estado:
-            <select name="selEstado">
+            <select class="form-select form-select-sm" name="selEstado">
                 <option>-</option>
                 <?php
                 $i=0;
@@ -76,14 +77,14 @@
         <?php else:?>
         <input type="checkbox" id="finalizados" name="pedidos_finalizados" />
         <?php endif;?>
-        <label for="scales">Pedidos Finalizados</label>
-        <input type="submit" value="Buscar">
+        <label for="scales" class="form-label">Pedidos Finalizados</label><br>
+        <input type="submit" class="btn btn-primary" value="Buscar">
         <button class="btn btn-success" name="btn_nuevo_pedido" onclick=" window.open('ficha.php?btn_nuevo_pedido=true','_blank')">Nuevo Pedido</button>
 
     </div>
     <div>
         <?php if(!empty($busqueda_pedidos)): ?>
-            <table>
+            <table class="table table-striped">
                 <thead>
 
 
@@ -107,7 +108,7 @@
                         <?php
                         $nombre_completo=$row_pedido['nombre']." ".$row_pedido['apellidos'];
                         if($nombre_completo!=" "):?>
-                        <td><?php echo($nombre_completo); ?></td>
+                        <td ><?php echo($nombre_completo); ?></td>
                         <?php else:?>
                         <td><?php echo("-"); ?></td>
                         <?php endif;?>
@@ -227,7 +228,7 @@ if($_REQUEST['page']=="1"){
         alert(dir_entreg.innerHTML);
         if(dir_recog.innerHTML!=="" && dir_entreg.innerHTML!==""){
             if(confirm("¿Estas seguro de que quieres calcular la distancia?")) {
-                /*
+
                 let array_recog=dir_recog.innerHTML.split("");
                 let recogida_geo = array_recog[0];
                 for (let i = 1; i < array_recog.length; i++) {
@@ -239,7 +240,7 @@ if($_REQUEST['page']=="1"){
                 for (let i = 1; i < array_entrega.length; i++) {
                     entrega_geo += "%20" + array_entrega[i];
                 }
-                */
+
                 let latitud_recogida;
                 let longitud_recogida;
                 let latitud_entrega;
