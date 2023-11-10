@@ -90,15 +90,12 @@
 
                 <input  type="hidden" name="order_dir" value=<?php echo($filtros['DIR']); ?>>
                 <input  type="hidden" name="order_by" value=<?php echo($filtros['ORDERBY']);?>>
-                <th style="cursor:pointer;" onclick="ordenar('Referencia')"
-                <th>Referencia</th>
-                <th style="cursor:pointer;" onclick="ordenar('nombre')"
-                <th>Rider</th>
+                <th>Referencia <img src="../../../images/order_logo.png" alt="Ordenar" width="20" height="20" style="cursor:pointer;" onclick="ordenar('Referencia')"></th>
+                <th>Rider <img src="../../../images/order_logo.png" alt="Ordenar" width="20" height="20" style="cursor:pointer;" onclick="ordenar('nombre')"></th>
                 <th>Fecha creación</th>
                 <th>Dirección de recogida</th>
                 <th>Dirección de entrega</th>
-                <th style="cursor:pointer;" onclick="ordenar('Distancia')"
-                <th>Distancia</th>
+                <th>Distancia <img src="../../../images/order_logo.png" alt="Ordenar" width="20" height="20" style="cursor:pointer;" onclick="ordenar('Distancia')"></th>
                 <th>Estado</th>
                 </thead>
                 <tbody>
@@ -155,7 +152,6 @@
 
 
 <?php
-
 echo("<label>Pedidos totales encontrados($num_reg)</label><br>");
 
 if($_REQUEST['page']=="1"){
@@ -164,10 +160,10 @@ if($_REQUEST['page']=="1"){
 }else {
     if ($page > 1) {
         if($_REQUEST['page']>2){
-            echo("<a href='listado.php?page=1'><span> << </span></a>");
+            echo("<a href='listado.php?txReferencia=&selRider=-&selEstado=-&pedidos_finalizados=on&order_dir=&order_by=&page=1'><span> << </span></a>");
         }
         $anterior = $_REQUEST['page'] - 1;
-        echo("<a href='listado.php?page=" . ($page - 1) . "'>" . "  ".$anterior." " . "</a>");
+        echo("<a href='listado.php?txReferencia=".$_REQUEST["txReferencia"]."&selRider=".$_REQUEST["selRider"]."&selEstado=".$_REQUEST["selEstado"]."&pedidos_finalizados=".$_REQUEST["pedidos_finalizados"]."&order_dir=".$_REQUEST["order_dir"]."&order_by=".$_REQUEST["order_by"]."&page=" . ($page - 1) . "'>" . "  ".$anterior." " . "</a>");
     }
 }
 
@@ -180,12 +176,12 @@ if($_REQUEST['page']=="1"){
     }
     */
     if ($page < $pages && $pages > 1) {
-        echo("<a href='listado.php?page=" . ($page + 1) . "'>" . "  ".$siguiente." " . "</a>");
+        echo("<a href='listado.php?txReferencia=".$_REQUEST["txReferencia"]."&selRider=".$_REQUEST["selRider"]."&selEstado=".$_REQUEST["selEstado"]."&pedidos_finalizados=".$_REQUEST["pedidos_finalizados"]."&order_dir=".$_REQUEST["order_dir"]."&order_by=".$_REQUEST["order_by"]."&page="  . ($page + 1) . "'>" . "  ".$siguiente." " . "</a>");
         if($_REQUEST['page']>$ultima){
             $_REQUEST['page']= $ultima;
         }
         if($_REQUEST['page']+1<$ultima){
-            echo("<a href='listado.php?page=" . ($ultima) . "'><span> >> </span></a><br>");
+            echo("<a href='listado.php?txReferencia=".$_REQUEST["txReferencia"]."&selRider=".$_REQUEST["selRider"]."&selEstado=".$_REQUEST["selEstado"]."&pedidos_finalizados=".$_REQUEST["pedidos_finalizados"]."&order_dir=".$_REQUEST["order_dir"]."&order_by=".$_REQUEST["order_by"]."&page=" . ($ultima) . "'><span> >> </span></a><br>");
         }
     }
 

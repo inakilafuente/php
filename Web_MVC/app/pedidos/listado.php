@@ -211,7 +211,6 @@ function get_pedidos($conexion_bd,$array_pedidos,$filtros,&$query){
         }
     }
 
-    //echo($query);
     $res_pedidos = mysqli_query($conexion_bd, $query);
     if($res_pedidos === false){
         echo 'Query error: ' . mysqli_error($conexion_bd);
