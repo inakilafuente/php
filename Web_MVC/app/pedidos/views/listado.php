@@ -90,12 +90,12 @@
 
                 <input  type="hidden" name="order_dir" value=<?php echo($filtros['DIR']); ?>>
                 <input  type="hidden" name="order_by" value=<?php echo($filtros['ORDERBY']);?>>
-                <th>Referencia <img src="../../../images/order_logo.png" alt="Ordenar" width="20" height="20" style="cursor:pointer;" onclick="ordenar('Referencia')"></th>
-                <th>Rider <img src="../../../images/order_logo.png" alt="Ordenar" width="20" height="20" style="cursor:pointer;" onclick="ordenar('nombre')"></th>
+                <th>Referencia <img src="../../../images/order_logo.png" alt="Ordenar Referencia" width="20" height="20" style="cursor:pointer;" onclick="ordenar('Referencia')"></th>
+                <th>Rider <img src="../../../images/order_logo.png" alt="Ordenar Rider" width="20" height="20" style="cursor:pointer;" onclick="ordenar('nombre')"></th>
                 <th>Fecha creación</th>
                 <th>Dirección de recogida</th>
                 <th>Dirección de entrega</th>
-                <th>Distancia <img src="../../../images/order_logo.png" alt="Ordenar" width="20" height="20" style="cursor:pointer;" onclick="ordenar('Distancia')"></th>
+                <th>Distancia <img src="../../../images/order_logo.png" alt="Ordenar Distancia" width="20" height="20" style="cursor:pointer;" onclick="ordenar('Distancia')"></th>
                 <th>Estado</th>
                 </thead>
                 <tbody>
