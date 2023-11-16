@@ -128,7 +128,7 @@
                         <td><?php echo($row_pedido['Distancia']); ?></td>
                         <?php else: ?>
 
-                        <td><img class="actualizar_dist" src="../../../images/actualizar.png" alt="Actualizar distancia" width="20" height="20" onclick="calcular_distancia()"></td>
+                        <td id="<?php echo($row_pedido['Referencia']);?>"><img class="actualizar_dist" src="../../../images/actualizar.png" alt="Actualizar distancia" width="20" height="20" onclick="calcular_distancia_pedido()"></td>
 
                         <?endif;?>
                         <td>
@@ -211,84 +211,84 @@ if($_REQUEST['page']=="1"){
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
 
-    function calcular_distancia(){
-        let distancias=document.getElementsByClassName("actualizar_dist");
-        let parent=distancias[0].parentElement;
-        let dir_recog= document.getElementById("txtDir_recog");
-
-        let valor_fila=document.createElement("td");
 
 
-        let dir_entreg=document.getElementById("txtDir_entreg");
-        alert(dir_recog.innerHTML);
-        alert(dir_entreg.innerHTML);
-        if(dir_recog.innerHTML!=="" && dir_entreg.innerHTML!==""){
-            if(confirm("¿Estas seguro de que quieres calcular la distancia?")) {
+   function actualizar_Distancia_BD(id,dist){
+       $.ajax({
+           url:'http://localhost/app/pedidos/listado.php',
+           type:'POST',
+           data:{
+               id:id,
+               distancia:dist
+           },
+           success: function (){
+               console.log('Distancia actualizada con exito en BD');
+           },
+           error: function (){
+               alert('Hubo un error al actualizar la distancia en la base de datos');
+           }
+       });
+   }
 
-                let array_recog=dir_recog.innerHTML.split("");
-                let recogida_geo = array_recog[0];
-                for (let i = 1; i < array_recog.length; i++) {
-                    recogida_geo += "%20" + array_recog[i];
-                }
-
-                let array_entrega=dir_entreg.innerHTML.split("");
-                let entrega_geo = array_entrega[0];
-                for (let i = 1; i < array_entrega.length; i++) {
-                    entrega_geo += "%20" + array_entrega[i];
-                }
-
-                let latitud_recogida;
-                let longitud_recogida;
-                let latitud_entrega;
-                let longitud_entrega;
-                $.get("http://api.positionstack.com/v1/forward?access_key=521c5d20deb4b33ed5b197c77b3d1ebe&query=" + dir_recog.innerHTML)
-                    .done(function(data){
-                        data.forEach(element => {
-                            latitud_recogida = element.value['0']['latitude'];
-                            longitud_recogida = element.value['0']['longitude'];
-                        });
-                    })
-                    .fail(function(xhr, status, error){
-                        alert("Error durante la ejecución de la Api");
-                    })
-
-                $.get("http://api.positionstack.com/v1/forward?access_key=521c5d20deb4b33ed5b197c77b3d1ebe&query=" + dir_entreg.innerHTML)
-            .done(function(data){
-                    data.forEach(element => {
-                        latitud_entrega = element.value['0']['latitude'];
-                        longitud_entrega = element.value['0']['longitude'];
-                    });
-                })
-                    .fail(function(xhr, status, error){
-                        alert("Error durante la ejecución de la Api");
-                    })
+   function obtenerCoordenadas(ubicacion){
+       return $.ajax({
+           url:"http://api.positionstack.com/v1/forward",
+           data:{
+               access_key: '521c5d20deb4b33ed5b197c77b3d1ebe',
+               query: ubicacion
+           },
+           dataType: 'json'
+       }).then(function (data){
+           if(data.data.length>0){
+               return {
+                   latitud: data.data[0].latitude,
+                   longitud: data.data[0].longitude
+               };
+           }else{
+               return null;
+           }
+       }).fail(function (){
+           alert("Hubo un error durante la peticion a la API PositionStack");
+           return null;
+       });
+   }
 
 
-                let R = 6371; // Radius of the earth in km
-                let dLat = deg2rad(latitud_entrega-latitud_recogida);  // deg2rad below
-                let dLon = deg2rad(longitud_entrega-longitud_recogida);
-                let a =
-                    Math.sin(dLat/2) * Math.sin(dLat/2) +
-                    Math.cos(deg2rad(latitud_recogida)) * Math.cos(deg2rad(latitud_entrega)) *
-                    Math.sin(dLon/2) * Math.sin(dLon/2)
-                ;
-                let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                let d = R * c;
-                let result=Math.round(d);
-                valor_fila.innerHTML=result;
-                distancias[0].remove();
-                parent.appendChild(valor_fila);
-            }
-        }else if(dir_recog[0].value===""){
-            alert("La direccion de recogida no esta indicada");
-        }else if(dir_entreg[0].value===""){
-            alert("La direccion de entrega no esta indicada");
-        }
-    }
+   function calcularDistancia(coord1, coord2){
+       var R=6371;
+       var dLat= to_Rad(coord2.latitud-coord1.latitud);
+       var dLon= to_Rad(coord2.longitud-coord1.longitud);
+       var a= Math.sin(dLat/2)*Math.sin(dLat/2)+
+           Math.cos(to_Rad(coord1.latitud))*
+           Math.cos(to_Rad(coord2.latitud))*
+           Math.sin(dLon/2)*Math.sin(dLon/2);
+       var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+       var distancia=R*c;
+       return distancia;
+   }
 
+   function to_Rad(grados){
+       return grados*(Math.PI/180);
+   }
 
-    function deg2rad(deg) {
-        return deg * (Math.PI/180)
-    }
+   function calcular_distancia_pedido(){
+       let ubicacion1= document.getElementById("txtDir_recog").innerHTML;
+       let ubicacion2=document.getElementById("txtDir_entreg").innerHTML;
+       alert(ubicacion1);
+       alert(ubicacion2);
+       $.when(
+           obtenerCoordenadas(ubicacion1),
+           obtenerCoordenadas(ubicacion2)
+       ).done(function (coordenadas1,coordenadas2){
+           if(coordenadas1&&coordenadas2){
+               var distancia=calcularDistancia(coordenadas1,coordenadas2);
+               fila.find('.actualizar_dist').text(distancia);
+               var id=fila.data('id');
+               actualizar_Distancia_BD(id,distancia);
+           }else{
+               alert("No se pudo calcular la distancia entre: "+ubicacion1+"y "+ubicacion2);
+           }
+       });
+   }
 </script>
 
