@@ -232,12 +232,13 @@ if($_REQUEST['page']=="1"){
 
    function obtenerCoordenadas(ubicacion){
        return $.ajax({
-           url:"http://api.positionstack.com/v1/forward",
+           type: 'GET',
+           url:"https://api.positionstack.com/v1/forward",
            data:{
                access_key: '521c5d20deb4b33ed5b197c77b3d1ebe',
                query: ubicacion
            },
-           dataType: 'json'
+           dataType: 'json',
        }).then(function (data){
            if(data.data.length>0){
                return {

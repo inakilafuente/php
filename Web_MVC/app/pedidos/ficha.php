@@ -22,6 +22,7 @@ $res_estados[2]="ENTREGADO";
 $array_pedido=array();
 $array_pedidos_disponibles=array();
 $array_riders_disponibles=array();
+$array_riders_disponibles_asignar=array();
 $pedido=null;
 $existe_pedido_id=false;
 //print_r($_POST);
@@ -38,6 +39,7 @@ $error_estado=false;
 
 $puede_recoger=false;
 $puede_entregar=false;
+$pedido_existe =false;
 if(array_key_exists("id", $_POST)){
     $id_pedido=$_POST['id_pedido'];
     $ref=addslashes($_POST['id']);
@@ -58,14 +60,20 @@ if(array_key_exists("id", $_POST)){
     }
     $date_creacion=strtotime($_POST["date_crecion"]);
     $fk_id_rider=addslashes($_POST['fk_idRider']);
+
     $array_pedidos_disponibles=get_pedidos($conexion_bd,$array_pedidos_disponibles);
+
 
     foreach($array_pedidos_disponibles as $pedido_foreach){
         if($pedido_foreach['Referencia']==$ref){
+    if($id_pedido==get_pedido_ref($conexion_bd,$array_pedido,$ref)[0]['PK_id']){
+            $pedido_existe =true;
             $error_ref_existe=true;
             $error_ref_exist_msg="Referencia en uso";
+    }
         }
     }
+
     if($ref==""){
         $error_ref_vacia=true;
         $error_ref_vacia_msg="Referencia vacia";
@@ -111,7 +119,7 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
                 return;
             }
             $date_creacion=strtotime($pedido[0]['Fecha_creacion']);
-            if($fk_id_rider!=""){
+            if($fk_id_rider!=""&&$fk_id_rider>0&&$fk_id_rider!=null){
                 $pedidos_por_rider=get_pedidos_por_rider($conexion_bd,$array_pedido,$fk_id_rider);
                 $error_rider_ocupado=false;
                 foreach($pedidos_por_rider as $pedido_por_rider){
@@ -138,7 +146,7 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
                 if(!$error_rider_ocupado && $dir_entreg!=" " && $estado=="1"){
                     $puede_entregar=true;
                 }
-    $array_riders_disponibles=get_riders_disponibles($conexion_bd,$array_riders_disponibles);
+    $array_riders_disponibles_asignar=get_riders_disponibles($conexion_bd,$array_riders_disponibles_asignar);
 
     }  else{
     if(array_key_exists('id', $_POST)) {
@@ -148,9 +156,12 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
         $error_ref_existe=false;
         foreach($array_pedidos_disponibles as $pedido_buscar){
             if($pedido_buscar['Referencia']==$ref){
-                $error_ref_existe=true;
-                $error_ref_exist_msg="Referencia en uso";
-                //echo($ref_exist_msg);
+                if($id_pedido==get_pedido_ref($conexion_bd,$array_pedido,$ref)[0]['PK_id']){
+                    $pedido_existe =true;
+                    $error_ref_existe=true;
+                    $error_ref_exist_msg="Referencia en uso";
+                    //echo($ref_exist_msg);
+                    }
             }
         }
         if($pedido['Referencia']==" "){
@@ -199,7 +210,7 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
             }
         }
 
-        if($fk_id_rider!=""){
+        if($fk_id_rider!=""&&$fk_id_rider>0&&$fk_id_rider!=null){
             $pedidos_por_rider=get_pedidos_por_rider($conexion_bd,$array_pedido,$fk_id_rider);
             $error_rider_ocupado=false;
             $cont=0;
@@ -229,15 +240,15 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
         }
 
         $date_creacion=strtotime($_POST['date_crecion']);
-
-        if($existe_pedido_id && $error_rider_existe && !$error_rider_ocupado){
+        var_dump($pedido_existe);
+        if($pedido_existe||$existe_pedido_id && $error_rider_existe && !$error_rider_ocupado){
             $error_ref_exist_msg="";
             $error_rider_existe_msg="";
             $pedido=new Pedido($id_pedido,$ref,$dir_recog,$date_recog,$dir_entreg,$date_entreg,$tiempo,$estado,$dist,$date_creacion,$fk_id_rider);
             actualizar_pedido($conexion_bd,$pedido);
             $pedido=get_pedido($conexion_bd,$array_pedido,$id_pedido);
         }else{
-            if(!$error_estado && !$error_ref_vacia && !$error_rider_ocupado){
+            if(!$error_estado && !$error_ref_vacia && !$error_rider_ocupado && !$pedido_existe){
                 $pedido=new Pedido($id_pedido,$ref,$dir_recog,$date_recog,$dir_entreg,$date_entreg,$tiempo,$estado,$dist,$date_creacion,$fk_id_rider);
                 guardar_pedido($conexion_bd,$pedido);
                 $pedido=get_pedido($conexion_bd,$array_pedido,$id_pedido);
@@ -270,6 +281,24 @@ function get_pedido($conexion_bd,$array_pedido,$id_pedido){
     }
     return $array_pedido;
 }
+
+
+function get_pedido_ref($conexion_bd,$array_pedido,$ref){
+    $query="SELECT PK_id FROM PEDIDO WHERE Referencia=".$ref;
+    $res_pedido = mysqli_query($conexion_bd, $query);
+    if($res_pedido === false){
+        echo 'Query error: ' . mysqli_error($conexion_bd);
+        exit;
+    }
+    while($row_pedido = $res_pedido->fetch_assoc()){
+        $array_pedido[]=$row_pedido;
+    }
+    return $array_pedido;
+}
+
+
+
+
 function get_pedidos_por_rider($conexion_bd,$array_pedido,$id_rider){
     $query="SELECT * FROM PEDIDO WHERE FK_ID_Rider=".$id_rider;
     $res_pedido = mysqli_query($conexion_bd, $query);

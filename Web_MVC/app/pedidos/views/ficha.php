@@ -121,6 +121,7 @@
         <input type="submit" class="btn btn-primary" value="Modificar pedido">
             <input type="button"  class="btn btn-danger" value="Cancelar" onclick="history.back();">
             <!-- Button trigger modal -->
+            <?php if($estado=='PENDIENTE'){?>
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 Asignar Rider
             </button>
@@ -135,13 +136,13 @@
                         <div class="modal-body">
                             <select name="select_RIDER_MODAL">
                                 <?php
-
-                                foreach($array_riders_disponibles as $row_rider): ?>
+                                foreach($array_riders_disponibles_asignar as $row_rider): ?>
                                     <option><?php echo($row_rider['nombre']." ". $row_rider['apellidos']);?></option>
                                 <?php endforeach; ?>
                             </select><br><br>
 
                         </div>
+                        <?php }?>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <input type="submit" class="btn btn-primary" value="Asignar">
