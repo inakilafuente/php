@@ -2,7 +2,7 @@
 // Este controlador se encarga de mostrar la vista de una ficha de un Pedido
 require_once '../../lib/Pedido.php';
 error_reporting(E_ERROR | E_PARSE);
-$host = "172.17.0.3";
+$host = "172.17.0.1";
 $port = 3306;
 $user = "root";
 $password = "test1234";
