@@ -104,6 +104,9 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
         $array_pedido=array();
         $pedidos=array();
         $id_pedido = addslashes($_GET['id']);
+        if(!is_numeric($id_pedido)){
+            echo("Pedido no valido");
+        }else{
             $pedidos=get_pedidos($conexion_bd,$pedidos);
             $existe=false;
             foreach($pedidos as $ped){
@@ -139,14 +142,16 @@ if(array_key_exists("btn_nuevo_pedido", $_GET)){
                 //echo($dist);
             }
             $estado=$pedido[0]["Estado"];
-                //echo(!$error_rider_ocupado. " - ".$dir_recog." - ".$estado. "\n");
-                if(!$error_rider_ocupado && $dir_recog!=" " && $estado=="0"){
-                    $puede_recoger=true;
-                }
-                if(!$error_rider_ocupado && $dir_entreg!=" " && $estado=="1"){
-                    $puede_entregar=true;
-                }
-    $array_riders_disponibles_asignar=get_riders_disponibles($conexion_bd,$array_riders_disponibles_asignar);
+            //echo(!$error_rider_ocupado. " - ".$dir_recog." - ".$estado. "\n");
+            if(!$error_rider_ocupado && $dir_recog!=" " && $estado=="0"){
+                $puede_recoger=true;
+            }
+            if(!$error_rider_ocupado && $dir_entreg!=" " && $estado=="1"){
+                $puede_entregar=true;
+            }
+            $array_riders_disponibles_asignar=get_riders_disponibles($conexion_bd,$array_riders_disponibles_asignar);
+
+        }
 
     }  else{
     if(array_key_exists('id', $_POST)) {

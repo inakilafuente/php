@@ -134,11 +134,11 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
+                        <?php if(count($array_riders_disponibles_asignar)<1){
+                                           echo("No hay riders disponibles");
+                               }else{ ?>
                             <select name="select_RIDER_MODAL">
                                 <?php
-                                if(count($array_riders_disponibles_asignar)<1){
-                                   echo("No hay riders disponibles");
-                                }  else{
                                 foreach($array_riders_disponibles_asignar as $row_rider): ?>
                                     <option><?php echo($row_rider['nombre']." ". $row_rider['apellidos']);?></option>
                                 <?php endforeach; ?>
